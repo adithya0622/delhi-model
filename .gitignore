@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets — NEVER commit
+.env
+*.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node / Webapp
+node_modules/
+webapp/node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Zip Archives
+*.zip
+
+# Data / model artefacts
+data/raw/
+data_cache/
+*.pkl
+*.h5
+*.nc
+*.safetensors
+
+# Logs
+*.log
+
+# Local-only: secrets + scratch
+API_KEYS.md
+.freebuff/
+
+.vercel

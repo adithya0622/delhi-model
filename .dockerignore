@@ -1,0 +1,32 @@
+# Secrets — never copy into the build context or bake into an image.
+# docker-compose injects .env at runtime via `env_file:`, so the container
+# still gets its config; it just isn't part of any image layer.
+.env
+.env.*
+!.env.example
+
+# Node — reinstalled with `npm ci` inside the build stage. Copying the host's
+# node_modules would drop platform-native binaries (e.g. Windows) into a Linux
+# image and clobber the clean install.
+**/node_modules/
+webapp/dist/
+frontend-web/node_modules/
+
+# Python caches / local virtualenvs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# VCS & tooling
+.git/
+.gitignore
+.github/
+.claude/
+
+# OS cruft
+.DS_Store
+Thumbs.db

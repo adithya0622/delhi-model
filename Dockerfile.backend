@@ -1,0 +1,66 @@
+# ── Stage 1: build the React console ──────────────────────────────────────────
+# The operator console (webapp/) is a static Vite build served by the backend at
+# /console. Building it here keeps Node out of the runtime image entirely.
+FROM node:24-slim AS console
+
+WORKDIR /web
+
+# Install against the lockfile first so this layer caches until deps change.
+COPY webapp/package.json webapp/package-lock.json ./
+RUN npm ci
+
+# Then build. vite is configured with base="/console/", so every emitted asset
+# URL resolves under the backend's StaticFiles mount without a rebuild.
+COPY webapp/ ./
+RUN npm run build            # tsc -b (strict typecheck) && vite build → /web/dist
+
+
+# ── Stage 2: build python dependencies ────────────────────────────────────────
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+
+# Install only what pip needs to compile wheels
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+
+# ── Stage 3: runtime (minimal, non-root) ─────────────────────────────────────
+FROM python:3.11-slim AS runtime
+
+# Non-root user for container security
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+WORKDIR /app
+
+# Copy installed packages from builder
+COPY --from=builder /root/.local /home/appuser/.local
+ENV PATH=/home/appuser/.local/bin:$PATH
+
+# Copy application source
+COPY backend/ .
+
+# Copy the built console to a fixed path and point the app at it. main.py reads
+# CONSOLE_DIST_DIR, mounts it at /console, and redirects / there. If this were
+# absent the app would still run standalone (/ returns the JSON descriptor).
+COPY --from=console /web/dist /app/console_dist
+ENV CONSOLE_DIST_DIR=/app/console_dist
+
+# Own everything as appuser
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import httpx; httpx.get('http://localhost:8000/api/v1/health').raise_for_status()"
+
+# Single worker: services/realtime_service.py holds an in-process TTLCache.
+# Multiple workers would keep divergent caches and double the load on OpenAQ.
+# To scale out, move the cache to Redis first, then raise this.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

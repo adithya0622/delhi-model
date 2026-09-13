@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" data-state="boot">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCR·72 — Coupled AQI Forecast, Delhi NCR</title>
+<meta name="description" content="72-hour air quality forecast for Delhi NCR with two-way meteorology–chemistry coupling, inversion tracking and stubble-plume dispersion.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Ambient particulate field. Density tracks the scrubbed hour's PM2.5.
+     Decorative only, and switched off entirely under reduced-motion. -->
+<canvas id="haze" class="haze" aria-hidden="true"></canvas>
+
+<!-- ─── Instrument rail ─────────────────────────────────────────────────── -->
+<header class="rail">
+  <div class="rail__brand">
+    <span class="rail__mark" aria-hidden="true"></span>
+    <span class="rail__name">NCR<span class="rail__dot">·</span>72</span>
+    <span class="rail__sub">coupled aqi forecast</span>
+  </div>
+
+  <div class="rail__feeds" role="status" aria-live="polite" aria-label="Upstream data feeds">
+    <span class="feed" data-feed="met"><i class="feed__led"></i>open-meteo</span>
+    <span class="feed" data-feed="obs"><i class="feed__led"></i>openaq</span>
+    <span class="feed" data-feed="fire"><i class="feed__led"></i>firms</span>
+  </div>
+
+  <div class="rail__right">
+    <span class="rail__stamp" id="stamp">—</span>
+    <button class="btn btn--ghost" id="reload" type="button">
+      <svg viewBox="0 0 16 16" aria-hidden="true" class="btn__icon"><path d="M13.6 8a5.6 5.6 0 1 1-1.9-4.2M13.4 1.4v2.9h-2.9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span>Refresh</span>
+    </button>
+  </div>
+</header>
+
+<!-- Sample-data banner. Hidden unless the console is running on the frozen
+     sample, in which case it must be impossible to miss. -->
+<div class="banner" id="banner" hidden>
+  <div class="banner__inner">
+    <strong class="banner__tag">Sample data</strong>
+    <span class="banner__text" id="banner-text"></span>
+    <div class="banner__scenarios" id="scenarios" role="group" aria-label="Sample scenario"></div>
+  </div>
+</div>
+
+<main>
+
+<!-- ─── Hero readout ────────────────────────────────────────────────────── -->
+<section class="hero" aria-labelledby="hero-h">
+  <div class="hero__left">
+    <p class="eyebrow">
+      <span id="station">Delhi NCR</span>
+      <span class="eyebrow__sep" aria-hidden="true">/</span>
+      <span id="coords">28.61°N 77.21°E</span>
+    </p>
+
+    <h1 class="hero__h" id="hero-h">
+      <span class="sr-only">Air quality index </span>
+      <output class="hero__num" id="aqi-num" for="scrub">—</output>
+    </h1>
+
+    <p class="hero__cat" id="aqi-cat">awaiting forecast</p>
+
+    <dl class="hero__meta">
+      <div class="hero__metaItem">
+        <dt>dominant</dt>
+        <dd id="dominant">—</dd>
+      </div>
+      <div class="hero__metaItem">
+        <dt>valid</dt>
+        <dd id="valid-at">—</dd>
+      </div>
+      <div class="hero__metaItem">
+        <dt>lead time</dt>
+        <dd id="lead">—</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="hero__right">
+    <p class="panel__label">CPCB sub-indices<span class="panel__labelNote">index &amp; concentration</span></p>
+    <ul class="subs" id="subs"></ul>
+    <p class="subs__foot">
+      The headline is the <em>maximum</em> sub-index, per CPCB National AQI (2014) —
+      not an average.
+    </p>
+  </div>
+</section>
+
+<!-- ─── Signature: the atmosphere ───────────────────────────────────────── -->
+<section class="section section--atmos" aria-labelledby="atmos-h">
+  <div class="section__head">
+    <div>
+      <p class="eyebrow">the signal</p>
+      <h2 class="section__h" id="atmos-h">The layer the air is trapped in</h2>
+      <p class="section__lede">
+        Delhi's pollution is a volume problem before it is an emissions problem. The
+        same source strength gives twice the concentration in a mixed layer half as
+        deep. Below, the shaded body <em>is</em> that layer across 72 hours — and the
+        hatched sliver above it is the depth the aerosol removed by shading the ground.
+        That sliver is the coupling.
+      </p>
+    </div>
+
+    <div class="transport">
+      <button class="btn btn--solid" id="sweep" type="button" aria-pressed="false">
+        <svg viewBox="0 0 16 16" aria-hidden="true" class="btn__icon" id="sweep-icon"><path d="M4.5 3.2v9.6L13 8z" fill="currentColor"/></svg>
+        <span id="sweep-label">Sweep 72 h</span>
+      </button>
+      <button class="btn btn--ghost" id="to-now" type="button">Now</button>
+    </div>
+  </div>
+
+  <figure class="atmos">
+    <div class="atmos__legend">
+      <span class="lg lg--slab">mixed layer</span>
+      <span class="lg lg--supp">removed by aerosol</span>
+      <span class="lg lg--met">met-model depth</span>
+      <span class="lg lg--inv">inversion</span>
+    </div>
+
+    <!-- Scrub surface. One SVG holds the cross-section AND the AQI ribbon so
+         they cannot drift out of alignment on the shared time axis. -->
+    <div class="atmos__stage" id="stage">
+      <svg id="chart" class="chart" viewBox="0 0 1200 476" preserveAspectRatio="xMidYMid meet"
+           role="slider" tabindex="0" aria-labelledby="atmos-h"
+           aria-valuemin="0" aria-valuemax="71" aria-valuenow="0" aria-valuetext="hour 0">
+        <defs>
+          <linearGradient id="g-slab" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%"   stop-color="#6E8598" stop-opacity=".55"/>
+            <stop offset="55%"  stop-color="#6E8598" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#6E8598" stop-opacity=".05"/>
+          </linearGradient>
+          <linearGradient id="g-resid" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#4A5C6D" stop-opacity=".20"/>
+            <stop offset="100%" stop-color="#4A5C6D" stop-opacity="0"/>
+          </linearGradient>
+          <pattern id="p-supp" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="7" stroke="#E8B21A" stroke-width="1.5" stroke-opacity=".55"/>
+          </pattern>
+          <clipPath id="clip-slab"><path id="clip-slab-path" d=""/></clipPath>
+          <clipPath id="clip-reveal"><rect id="reveal-rect" x="0" y="0" width="1200" height="476"/></clipPath>
+        </defs>
+
+        <g id="c-grid"     class="c-grid"></g>
+        <g id="c-resid"    clip-path="url(#clip-reveal)"></g>
+        <g id="c-supp"     clip-path="url(#clip-reveal)"></g>
+        <g id="c-haze"     clip-path="url(#clip-slab)"></g>
+        <g id="c-slab"     clip-path="url(#clip-reveal)"></g>
+        <g id="c-met"      clip-path="url(#clip-reveal)"></g>
+        <g id="c-inv"      clip-path="url(#clip-reveal)"></g>
+        <g id="c-ribbon"   clip-path="url(#clip-reveal)"></g>
+        <g id="c-axis"     class="c-axis"></g>
+        <g id="c-cursor"   class="c-cursor"></g>
+      </svg>
+
+      <div class="atmos__tip" id="tip" hidden></div>
+    </div>
+
+    <figcaption class="atmos__cap">
+      Drag anywhere on the field, or use <kbd>←</kbd> <kbd>→</kbd> to step an hour,
+      <kbd>PgUp</kbd> <kbd>PgDn</kbd> for six. Every reading on this page follows the cursor.
+    </figcaption>
+  </figure>
+
+  <!-- Readouts driven by the cursor -->
+  <div class="readouts" id="readouts">
+    <div class="ro">
+      <p class="ro__k">mixing depth</p>
+      <p class="ro__v"><span id="ro-pbl">—</span><i>m</i></p>
+      <p class="ro__n">met model <span id="ro-pblmet">—</span> m</p>
+    </div>
+    <div class="ro">
+      <p class="ro__k">depth removed</p>
+      <p class="ro__v ro__v--warn"><span id="ro-supp">—</span><i>%</i></p>
+      <p class="ro__n">by aerosol shading</p>
+    </div>
+    <div class="ro">
+      <p class="ro__k">column AOD</p>
+      <p class="ro__v"><span id="ro-aod">—</span></p>
+      <p class="ro__n">550 nm, from the PM profile</p>
+    </div>
+    <div class="ro">
+      <p class="ro__k">surface forcing</p>
+      <p class="ro__v"><span id="ro-sw">—</span><i>W/m²</i></p>
+      <p class="ro__n">shortwave withheld</p>
+    </div>
+    <div class="ro">
+      <p class="ro__k">wind</p>
+      <p class="ro__v"><span id="ro-wind">—</span><i>m/s</i></p>
+      <p class="ro__n"><span id="ro-winddir">—</span> at 850 hPa</p>
+    </div>
+    <div class="ro">
+      <p class="ro__k">ΔT 925–1000 hPa</p>
+      <p class="ro__v"><span id="ro-dt">—</span><i>°C</i></p>
+      <p class="ro__n" id="ro-invstate">—</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── The return leg ──────────────────────────────────────────────────── -->
+<section class="section section--loop" aria-labelledby="loop-h">
+  <div class="section__head">
+    <div>
+      <p class="eyebrow">the return leg</p>
+      <h2 class="section__h" id="loop-h">Chemistry pushing back on the weather</h2>
+      <p class="section__lede">
+        One-way models stop at "shallow layer makes dirty air". The return leg is that
+        dirty air dimming the surface, cooling it, and making the layer shallower still.
+        Each hour is solved as a fixed point, so the numbers on this loop are mutually
+        consistent rather than sequential guesses.
+      </p>
+    </div>
+    <div class="loop__iter">
+      <span class="loop__iterN" id="loop-iters">—</span>
+      <span class="loop__iterK">Picard iterations<br>to converge</span>
+    </div>
+  </div>
+
+  <ol class="loop" id="loop">
+    <li class="loop__node" data-node="pm">
+      <span class="loop__i">PM2.5</span>
+      <span class="loop__v"><span data-v="pm">—</span><i>µg/m³</i></span>
+      <span class="loop__d">surface load</span>
+    </li>
+    <li class="loop__node" data-node="aod">
+      <span class="loop__i">AOD</span>
+      <span class="loop__v"><span data-v="aod">—</span></span>
+      <span class="loop__d">extinction × depth</span>
+    </li>
+    <li class="loop__node" data-node="sw">
+      <span class="loop__i">shortwave</span>
+      <span class="loop__v"><span data-v="sw">—</span><i>W/m²</i></span>
+      <span class="loop__d">withheld from ground</span>
+    </li>
+    <li class="loop__node" data-node="dt">
+      <span class="loop__i">surface</span>
+      <span class="loop__v"><span data-v="dt">—</span><i>°C</i></span>
+      <span class="loop__d">cooling</span>
+    </li>
+    <li class="loop__node loop__node--close" data-node="pbl">
+      <span class="loop__i">mixing depth</span>
+      <span class="loop__v"><span data-v="pbl">—</span><i>%</i></span>
+      <span class="loop__d">suppressed → back to PM2.5</span>
+    </li>
+  </ol>
+
+  <p class="loop__note">
+    At night the shortwave term is necessarily zero. The loop stays closed anyway
+    through a surface thermal-memory term: an afternoon spent under thick aerosol
+    hands the following night a colder surface to build its inversion on.
+  </p>
+</section>
+
+<!-- ─── Inversion + plume ───────────────────────────────────────────────── -->
+<div class="split">
+
+  <section class="section section--inv" aria-labelledby="inv-h">
+    <p class="eyebrow">lid</p>
+    <h2 class="section__h section__h--sm" id="inv-h">Inversion watch</h2>
+    <p class="section__lede section__lede--sm">
+      ΔT between 925 and 1000 hPa. Positive means temperature rising with height —
+      a lid, and no vertical escape for anything emitted beneath it.
+    </p>
+
+    <div class="inv__strip" id="inv-strip" aria-hidden="true"></div>
+    <div class="inv__axis"><span>now</span><span>+24</span><span>+48</span><span>+72 h</span></div>
+
+    <dl class="inv__stats">
+      <div><dt>ΔT now</dt><dd id="inv-dt">—</dd></div>
+      <div><dt>severity</dt><dd id="inv-sev">—</dd></div>
+      <div><dt>lapse rate</dt><dd id="inv-lapse">—</dd></div>
+      <div><dt>hours with a lid</dt><dd id="inv-hours">—</dd></div>
+    </dl>
+  </section>
+
+  <section class="section section--plume" aria-labelledby="plume-h">
+    <p class="eyebrow">upwind</p>
+    <h2 class="section__h section__h--sm" id="plume-h">Stubble transport</h2>
+    <p class="section__lede section__lede--sm">
+      Fire detections over the Punjab–Haryana belt, advected on the 850 hPa wind.
+      Attribution is a difference of two full model runs, one with the smoke and one
+      without — not a subtraction of the plume's own concentration.
+    </p>
+
+    <div class="plume__mapWrap">
+      <canvas id="map" class="plume__map" width="760" height="470"></canvas>
+      <p class="plume__empty" id="plume-empty" hidden></p>
+    </div>
+
+    <dl class="plume__stats">
+      <div><dt>detections</dt><dd id="pl-count">—</dd></div>
+      <div><dt>share of AQI now</dt><dd id="pl-share">—</dd></div>
+      <div><dt>peak share</dt><dd id="pl-peak">—</dd></div>
+      <div><dt>850 hPa wind</dt><dd id="pl-wind">—</dd></div>
+    </dl>
+  </section>
+
+</div>
+
+<!-- ─── Live stations ───────────────────────────────────────────────────── -->
+<section class="section section--stations" aria-labelledby="st-h">
+  <div class="section__head">
+    <div>
+      <p class="eyebrow">ground truth</p>
+      <h2 class="section__h section__h--sm" id="st-h">Live monitoring network</h2>
+      <p class="section__lede section__lede--sm">
+        CPCB stations via OpenAQ, ordered worst first. The nearest reading also anchors
+        hour 0 of the forecast, so the curve opens on observed air rather than on
+        climatology.
+      </p>
+    </div>
+    <p class="stations__city" id="st-city"></p>
+  </div>
+  <div class="stations" id="stations"></div>
+  <p class="stations__msg" id="st-msg" hidden></p>
+</section>
+
+<footer class="foot">
+  <div class="foot__col">
+    <p class="foot__h">What this model is</p>
+    <p>
+      A parameterised single-column surrogate: a two-reservoir box model with
+      prognostic mass budget, an aerosol–radiation–boundary-layer feedback solved
+      to a fixed point each hour, and Gaussian plume transport for stubble smoke.
+      Emission fluxes are hand-set to reproduce the order of magnitude and diurnal
+      shape of CPCB Delhi climatology.
+    </p>
+  </div>
+  <div class="foot__col">
+    <p class="foot__h">What it is not</p>
+    <p>
+      It is not a chemistry transport model, and no accuracy figure is quoted
+      anywhere in this interface because no withheld-data backtest exists in the
+      repository. Every number here is model output or a live upstream reading,
+      labelled as one or the other.
+    </p>
+  </div>
+  <div class="foot__col">
+    <p class="foot__h">Interfaces</p>
+    <p>
+      <a href="/docs">OpenAPI reference</a><br>
+      <a href="/api/v1/forecast/72hr?lat=28.61&amp;lon=77.21">Raw forecast JSON</a><br>
+      <a href="/api/v1/inversion/status">Raw inversion series</a>
+    </p>
+  </div>
+</footer>
+
+</main>
+
+<!-- Boot overlay. The forecast integrates 72 coupled hours behind two upstream
+     calls, so this is a real wait, not a decorative one. -->
+<div class="boot" id="boot">
+  <div class="boot__inner">
+    <p class="boot__mark">NCR<span>·</span>72</p>
+    <p class="boot__msg" id="boot-msg">contacting backend</p>
+    <div class="boot__bar"><i id="boot-fill"></i></div>
+    <ol class="boot__steps" id="boot-steps">
+      <li data-step="api">reach api</li>
+      <li data-step="met">meteorology + coupled column</li>
+      <li data-step="inv">inversion diagnostics</li>
+      <li data-step="fire">fire detections</li>
+      <li data-step="obs">station network</li>
+    </ol>
+    <p class="boot__err" id="boot-err" hidden></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

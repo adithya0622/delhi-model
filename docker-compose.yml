@@ -1,0 +1,70 @@
+services:
+  backend:
+    # This image also builds and serves the React operator console at
+    # http://localhost:8000/console (see Dockerfile.backend). The console is
+    # same-origin with the API, so it needs no CORS entry — ALLOWED_ORIGINS below
+    # is only for the separate Streamlit dashboard on :8501.
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - ALLOWED_ORIGINS=http://localhost:8501
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import httpx; httpx.get('http://localhost:8000/api/v1/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - aqi_net
+
+  frontend:
+    # No custom Dockerfile: Streamlit installs into the base python image at
+    # start-up. Slower first boot, but one less image to keep in sync.
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./frontend:/app/frontend
+      - ./requirements.txt:/app/requirements.txt
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt -q &&
+             streamlit run frontend/app.py
+               --server.port 8501
+               --server.address 0.0.0.0
+               --server.headless true
+               --browser.gatherUsageStats false"
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - aqi_net
+
+  redis:
+    # Removed. Nothing in the backend ever connected to it: caching is an
+    # in-process TTLCache (services/realtime_service.py) and slowapi's rate
+    # limiter is constructed without a storage_uri, so it is in-memory too.
+    # The service only published an unauthenticated 6379 on the host for no
+    # benefit. If the cache is ever moved out of process, restore it here AND
+    # give the limiter a storage_uri, then --workers can be raised above 1.
+    profiles: ["unused"]
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - aqi_net
+    command: redis-server --save 60 1 --loglevel warning
+
+networks:
+  aqi_net:
+    driver: bridge

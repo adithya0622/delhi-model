@@ -1,0 +1,33 @@
+PROJECT SUMMARY: DELHI NCR COUPLED AQI FORECAST + LIVE DASHBOARD
+
+1. PROJECT OVERVIEW
+Two halves behind one dashboard. The first is a live air-quality monitor for Delhi NCR: real CPCB/DPCC station readings, mapped and ranked. The second is a 72-hour coupled forecast in which meteorology and chemistry affect each other in both directions, which is the part the problem statement is actually about. Earlier versions of this summary described only the monitoring half.
+
+2. ARCHITECTURE
+- Backend: Python FastAPI on Uvicorn, single worker.
+- Frontend: Streamlit, consuming the backend REST API.
+- Caching: an in-process TTLCache (5 minutes for instant AQI, 60 minutes for NowCast) plus in-memory rate limiting. There is no Redis and no database. A Redis service used to sit in docker-compose and this summary used to claim it cached computations and rate limits; nothing ever connected to it, so it was removed. Single worker follows from that: two workers would keep divergent caches.
+- Physics lives in backend/app/physics (inversion_engine, box_model, plume_advection) and is integrated hour by hour in services/aqi_service.py. It imports only the standard library plus httpx, so it can be run and tested without the web layer. The pure scale arithmetic (CPCB/EPA sub-indices, breakpoint tables) and the pollutant definitions live in backend/app/domain (aqi_scales, species) with zero third-party imports; services/realtime_service.py re-exports aqi_scales under its original names, so the function that once reported clean air as "Severe" can now be unit-tested on the standard library alone rather than behind the HTTP stack.
+
+3. DATA SOURCING
+- OpenAQ v3 is the single source of ground observations, queried over a Delhi NCR bounding box of 76.60,28.20 to 77.60,29.10 (minLon,minLat,maxLon,maxLat). An API key is required; v3 rejects unauthenticated requests.
+- Open-Meteo supplies pressure-level temperature (925/1000 hPa), boundary-layer height, shortwave radiation and 850 hPa winds. No key needed.
+- NASA FIRMS supplies VIIRS/MODIS fire detections over the Punjab-Haryana burning belt.
+- Stale-data filtering: any station whose latest reading is older than 24 hours is discarded, so defunct nodes never appear.
+- Fault tolerance: sensors are fetched concurrently with asyncio.gather(return_exceptions=True) behind a semaphore of 8, so one timeout drops one station rather than the batch.
+- No synthetic fallbacks anywhere. Mock generators and the third-party WAQI scraper have been deleted, including a _synthetic_hotspots() function that used to invent fires when no FIRMS key was set. When an upstream is unavailable the endpoint returns 502, or the hotspot list is simply empty, and the dashboard says so.
+
+4. THE COUPLED FORECAST
+- Meteorology to chemistry: a two-reservoir prognostic column (mixed layer plus residual layer) carries an explicit mass budget. Emissions accumulate under the lid, ventilate at a rate set by wind speed and city scale, and relax toward a regional background. When the lid grows it entrains what was stranded above (morning fumigation); when it collapses it strands mass aloft. That path dependence is what allows an overnight inversion to actually trap pollution instead of merely scaling a steady state.
+- Chemistry to meteorology: the PM2.5 column gives an aerosol optical depth, which removes surface shortwave, which cools the surface, which lowers the boundary layer, which raises PM2.5. The loop is closed by Picard iteration with under-relaxation (typically 1-6 iterations). Cooling is gated on insolation, so aerosol cannot dim a dark sky, and a one-pole thermal memory with an 8-hour time constant carries daytime cooling into the night.
+- Inversion strength: dT = T(925 hPa) - T(1000 hPa), with lapse rate and severity bands, tracked and plotted for all 72 hours.
+- Stubble plumes: fire radiative power converts to dry matter burned and then to PM2.5 emission, each hotspot is advected on hourly 850 hPa winds, and arrival is measured by closest approach along the trajectory. Smoke enters as an elevated regional background rather than a surface flux, because long-range plumes arrive above the nocturnal boundary layer. Its share of the AQI is measured by rerunning the entire column with the smoke removed and differencing.
+
+5. AQI CALCULATION
+Concentrations convert to sub-indices by the official CPCB 2014 method: linear interpolation inside the containing breakpoint segment, with the overall AQI the maximum across PM2.5, PM10, O3, NO2, SO2 and CO. The live panel also offers US EPA 2012 breakpoints with the EPA NowCast weighting; those are labelled with EPA category names, not CPCB ones, because the two scales break at different values and are not interchangeable. CO is converted from ug/m3 to mg/m3 before lookup.
+
+6. FRONTEND
+Streamlit polls /api/v1/realtime/* and /api/v1/forecast/72hr. A dark Folium map shows live stations with AQI-scaled markers plus FRP-scaled fire hotspots and plume trajectories. Plotly renders the AQI gauge, pollutant bars, the 72-hour outlook, an inversion-strength timeline with severity bands, and a chart of boundary-layer height before and after the aerosol feedback with AOD overlaid. Responses are cached for five minutes, and the cache is bypassed on HTTP errors so a transient failure is not cached.
+
+7. WHAT THIS IS NOT
+No horizontal grid, no advection of the urban pollutant field, no gas-phase chemical mechanism, no WRF-Chem. It is a single-column surrogate, chosen deliberately so the forecast returns in seconds against live data. No accuracy figure is claimed anywhere: the physics is checked for behaviour (signs, mass conservation, monotonicity, seasonal contrast) by scripts/verify and by a 149-test assertion suite in backend/tests, but it has not been scored against withheld observations, so the honest answer to "what is your MAE" is that it has not been measured.

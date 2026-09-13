@@ -1,0 +1,228 @@
+{
+  "model_id": "amazon/chronos-t5-small",
+  "selected": "zero_shot",
+  "framework": "chronos-forecasting (Amazon, Apache-2.0) + transformers T5",
+  "token_spec": {
+    "model_id": "amazon/chronos-t5-small",
+    "vocabulary_size": 4096,
+    "n_special_tokens": 2,
+    "context_length": 512,
+    "native_prediction_length": 64,
+    "serving_context_hours": 168,
+    "forecast_horizon_hours": 72,
+    "tokenizer": "MeanScaleUniformBins (mean-scaled, quantised to 4096 bins)"
+  },
+  "data": {
+    "start": "2025-03-14",
+    "end": "2026-09-12",
+    "rows": 13152,
+    "train_origins": 176,
+    "holdout_start": "2025-09-12",
+    "eval_origins": 91,
+    "winter_upsample": 3
+  },
+  "zero_shot": {
+    "species": {
+      "pm2_5": {
+        "mae": 29.0,
+        "rmse": 43.749,
+        "r2": 0.1713,
+        "n": 6552
+      },
+      "pm10": {
+        "mae": 109.613,
+        "rmse": 193.749,
+        "r2": 0.227,
+        "n": 6552
+      },
+      "no2": {
+        "mae": 13.189,
+        "rmse": 20.99,
+        "r2": 0.3301,
+        "n": 6552
+      },
+      "o3": {
+        "mae": 23.987,
+        "rmse": 32.069,
+        "r2": 0.6968,
+        "n": 6552
+      },
+      "so2": {
+        "mae": 10.255,
+        "rmse": 15.975,
+        "r2": 0.0906,
+        "n": 6552
+      },
+      "co": {
+        "mae": 296.246,
+        "rmse": 458.701,
+        "r2": 0.3984,
+        "n": 6552
+      }
+    },
+    "aqi": {
+      "overall": {
+        "n": 6552,
+        "aqi_cpcb_mae": 85.46,
+        "aqi_cpcb_rmse": 121.87,
+        "aqi_cpcb_r2": 0.0143
+      },
+      "winter": {
+        "n": 2160,
+        "aqi_cpcb_mae": 62.81,
+        "aqi_cpcb_rmse": 84.93,
+        "aqi_cpcb_r2": -0.005
+      },
+      "non_winter": {
+        "n": 4392,
+        "aqi_cpcb_mae": 96.6,
+        "aqi_cpcb_rmse": 136.41,
+        "aqi_cpcb_r2": 0.0122
+      }
+    },
+    "persistence": {
+      "pm2_5_mae": 37.587,
+      "aqi_cpcb_mae": 92.68
+    }
+  },
+  "finetuned": {
+    "species": {
+      "pm2_5": {
+        "mae": 28.885,
+        "rmse": 43.624,
+        "r2": 0.176,
+        "n": 6552
+      },
+      "pm10": {
+        "mae": 106.467,
+        "rmse": 191.643,
+        "r2": 0.2437,
+        "n": 6552
+      },
+      "no2": {
+        "mae": 12.834,
+        "rmse": 20.019,
+        "r2": 0.3906,
+        "n": 6552
+      },
+      "o3": {
+        "mae": 23.701,
+        "rmse": 31.92,
+        "r2": 0.6997,
+        "n": 6552
+      },
+      "so2": {
+        "mae": 9.868,
+        "rmse": 15.409,
+        "r2": 0.154,
+        "n": 6552
+      },
+      "co": {
+        "mae": 271.43,
+        "rmse": 424.476,
+        "r2": 0.4849,
+        "n": 6552
+      }
+    },
+    "aqi": {
+      "overall": {
+        "n": 6552,
+        "aqi_cpcb_mae": 85.68,
+        "aqi_cpcb_rmse": 120.63,
+        "aqi_cpcb_r2": 0.0343
+      },
+      "winter": {
+        "n": 2160,
+        "aqi_cpcb_mae": 63.98,
+        "aqi_cpcb_rmse": 84.1,
+        "aqi_cpcb_r2": 0.0147
+      },
+      "non_winter": {
+        "n": 4392,
+        "aqi_cpcb_mae": 96.35,
+        "aqi_cpcb_rmse": 135.01,
+        "aqi_cpcb_r2": 0.0324
+      }
+    },
+    "persistence": {
+      "pm2_5_mae": 37.587,
+      "aqi_cpcb_mae": 92.68
+    }
+  },
+  "acceptance": {
+    "finetuned_beats_zero_shot": false,
+    "note": "the checkpoint with the lower holdout six-pollutant CPCB AQI MAE is exported"
+  },
+  "leakage": "chronological split; holdout = final 12 months; fine-tune never sees holdout origins",
+  "generated_at": "2026-09-12T13:14:38.974132",
+  "chronos2_zero_shot": {
+    "species": {
+      "pm2_5": {
+        "mae": 25.288,
+        "rmse": 36.828,
+        "r2": 0.2549,
+        "n": 4320
+      },
+      "pm10": {
+        "mae": 125.43,
+        "rmse": 204.186,
+        "r2": 0.2853,
+        "n": 4320
+      },
+      "no2": {
+        "mae": 9.563,
+        "rmse": 14.158,
+        "r2": 0.6187,
+        "n": 4320
+      },
+      "o3": {
+        "mae": 20.76,
+        "rmse": 27.825,
+        "r2": 0.7725,
+        "n": 4320
+      },
+      "so2": {
+        "mae": 7.082,
+        "rmse": 10.275,
+        "r2": 0.4339,
+        "n": 4320
+      },
+      "co": {
+        "mae": 226.686,
+        "rmse": 360.325,
+        "r2": 0.5597,
+        "n": 4320
+      }
+    },
+    "aqi": {
+      "overall": {
+        "n": 4320,
+        "aqi_cpcb_mae": 83.33,
+        "aqi_cpcb_rmse": 116.85,
+        "aqi_cpcb_r2": 0.2384
+      },
+      "winter": {
+        "n": 864,
+        "aqi_cpcb_mae": 54.59,
+        "aqi_cpcb_rmse": 76.6,
+        "aqi_cpcb_r2": 0.2089
+      },
+      "non_winter": {
+        "n": 3456,
+        "aqi_cpcb_mae": 90.52,
+        "aqi_cpcb_rmse": 124.9,
+        "aqi_cpcb_r2": 0.2233
+      }
+    },
+    "persistence": {},
+    "framework": "chronos-2 (universal; multivariate + met covariates) \u2014 ZERO-SHOT"
+  },
+  "model_comparison": {
+    "aqi_mae_leaderboard": {
+      "chronos2_zero_shot": 83.33,
+      "chronos_t5_small_zero_shot": 96.9
+    },
+    "winner_by_aqi_mae": "chronos2_zero_shot",
+    "identical_origins": true
+  }
+}

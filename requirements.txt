@@ -1,0 +1,25 @@
+fastapi==0.111.0
+uvicorn==0.29.0
+pydantic==2.7.1
+pydantic-settings==2.2.1
+slowapi==0.1.9
+httpx==0.27.0
+cachetools==5.3.3
+python-dotenv==1.0.1
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.0
+scikit-learn==1.9.0
+joblib==1.5.3
+
+# --- Chronos T5 token-based forecasting (foundation model; optional at runtime) ---
+# The API degrades gracefully when these are absent (chronos-status reports the reason).
+torch==2.14.0
+chronos-forecasting==2.3.2
+transformers==4.57.6
+accelerate==1.15.0
+einops==0.8.2
+regex==2024.11.6
+
+# LoRA fine-tuning for the Delhi Chronos-2 specialists (training-time only)
+peft==0.20.0

@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-09-12T13:56:59.705530",
+  "holdout_origins": 60,
+  "holdout_start": "2026-01-14",
+  "identical_origins": true,
+  "results": {
+    "chronos_t5_small_zero_shot": {
+      "species": {
+        "pm2_5": {
+          "mae": 26.461,
+          "rmse": 36.282,
+          "r2": 0.2768,
+          "n": 4320
+        },
+        "pm10": {
+          "mae": 133.509,
+          "rmse": 209.31,
+          "r2": 0.249,
+          "n": 4320
+        },
+        "no2": {
+          "mae": 11.204,
+          "rmse": 17.182,
+          "r2": 0.4384,
+          "n": 4320
+        },
+        "o3": {
+          "mae": 25.734,
+          "rmse": 34.511,
+          "r2": 0.65,
+          "n": 4320
+        },
+        "so2": {
+          "mae": 8.386,
+          "rmse": 12.137,
+          "r2": 0.2101,
+          "n": 4320
+        },
+        "co": {
+          "mae": 256.137,
+          "rmse": 402.392,
+          "r2": 0.4509,
+          "n": 4320
+        }
+      },
+      "aqi": {
+        "overall": {
+          "n": 4320,
+          "aqi_cpcb_mae": 96.9,
+          "aqi_cpcb_rmse": 131.28,
+          "aqi_cpcb_r2": 0.0387
+        },
+        "winter": {
+          "n": 864,
+          "aqi_cpcb_mae": 64.54,
+          "aqi_cpcb_rmse": 88.46,
+          "aqi_cpcb_r2": -0.0551
+        },
+        "non_winter": {
+          "n": 3456,
+          "aqi_cpcb_mae": 104.98,
+          "aqi_cpcb_rmse": 139.95,
+          "aqi_cpcb_r2": 0.025
+        }
+      },
+      "persistence": {
+        "pm2_5_mae": 36.275,
+        "aqi_cpcb_mae": 104.87
+      }
+    },
+    "chronos2_zero_shot": {
+      "species": {
+        "pm2_5": {
+          "mae": 25.288,
+          "rmse": 36.828,
+          "r2": 0.2549,
+          "n": 4320
+        },
+        "pm10": {
+          "mae": 125.43,
+          "rmse": 204.186,
+          "r2": 0.2853,
+          "n": 4320
+        },
+        "no2": {
+          "mae": 9.563,
+          "rmse": 14.158,
+          "r2": 0.6187,
+          "n": 4320
+        },
+        "o3": {
+          "mae": 20.76,
+          "rmse": 27.825,
+          "r2": 0.7725,
+          "n": 4320
+        },
+        "so2": {
+          "mae": 7.082,
+          "rmse": 10.275,
+          "r2": 0.4339,
+          "n": 4320
+        },
+        "co": {
+          "mae": 226.686,
+          "rmse": 360.325,
+          "r2": 0.5597,
+          "n": 4320
+        }
+      },
+      "aqi": {
+        "overall": {
+          "n": 4320,
+          "aqi_cpcb_mae": 83.33,
+          "aqi_cpcb_rmse": 116.85,
+          "aqi_cpcb_r2": 0.2384
+        },
+        "winter": {
+          "n": 864,
+          "aqi_cpcb_mae": 54.59,
+          "aqi_cpcb_rmse": 76.6,
+          "aqi_cpcb_r2": 0.2089
+        },
+        "non_winter": {
+          "n": 3456,
+          "aqi_cpcb_mae": 90.52,
+          "aqi_cpcb_rmse": 124.9,
+          "aqi_cpcb_r2": 0.2233
+        }
+      },
+      "persistence": {},
+      "framework": "chronos-2 (universal; multivariate + met covariates) \u2014 ZERO-SHOT"
+    }
+  },
+  "aqi_mae_leaderboard": {
+    "chronos2_zero_shot": 83.33,
+    "chronos_t5_small_zero_shot": 96.9
+  },
+  "winner_by_aqi_mae": "chronos2_zero_shot",
+  "note": "T5 fine-tuned variant is scored inside train_chronos_delhi_72h.py; the trainer exports the better of its own two stages"
+}

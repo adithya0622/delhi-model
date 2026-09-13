@@ -1,0 +1,298 @@
+{
+  "model_type": "HistGradientBoostingRegressor (chemical regime features)",
+  "model_version": "20260827T171848Z",
+  "trained_at": "2026-08-27T17:18:48.352272+00:00",
+  "target": "future station PM2.5",
+  "target_unit": "\u00b5g/m\u00b3",
+  "feature_names": [
+    "station_lat",
+    "station_lon",
+    "lead_hours",
+    "current_pm25",
+    "lag1_pm25",
+    "lag3_pm25",
+    "lag6_pm25",
+    "lag12_pm25",
+    "lag24_pm25",
+    "mean6_pm25",
+    "mean24_pm25",
+    "std24_pm25",
+    "trend3_pm25",
+    "cams_pm25",
+    "cams_origin_pm25",
+    "cams_change_pm25",
+    "nudged_cams_12h",
+    "nudged_cams_24h",
+    "nudged_cams_48h",
+    "temperature_2m_c",
+    "relative_humidity_pct",
+    "precipitation_mm",
+    "pbl_height_m",
+    "shortwave_radiation_w_m2",
+    "wind_speed_ms",
+    "wind_direction_sin",
+    "wind_direction_cos",
+    "inversion_delta_t_c",
+    "ventilation_m2_s",
+    "target_hour_sin",
+    "target_hour_cos",
+    "target_year_sin",
+    "target_year_cos",
+    "no2_o3_ratio",
+    "oxidation_capacity",
+    "pm_formation_potential",
+    "co_no2_ratio",
+    "is_rush_hour",
+    "is_nocturnal",
+    "is_morning_transition",
+    "is_evening_transition",
+    "cams_change"
+  ],
+  "selected_parameters": {
+    "max_leaf_nodes": 127,
+    "min_samples_leaf": 30,
+    "l2_regularization": 1.0
+  },
+  "sklearn_version": "1.9.0",
+  "training_window": {
+    "start": "2025-08-01",
+    "end": "2026-08-20"
+  },
+  "split": {
+    "method": "chronological 80/20 target-time split with 72-hour purge",
+    "train_cutoff": "2026-06-05T03:48:00",
+    "train_rows": 167525,
+    "test_rows": 38316
+  },
+  "cleaning_audit": [
+    {
+      "sensor_id": 12235610,
+      "station": "Anand Vihar",
+      "observations": {
+        "rows_received": 8181,
+        "rows_accepted": 7026,
+        "hours_retained": 7026,
+        "duplicate_rows_collapsed": 0,
+        "flagged": 5,
+        "low_coverage": 1150
+      },
+      "weather": {
+        "rows_received": 9240,
+        "rows_retained": 9240
+      },
+      "cams": {
+        "rows_received": 9240,
+        "rows_retained": 9240
+      },
+      "training_rows": 64138,
+      "skipped_samples": {
+        "insufficient_24h_history": 57,
+        "missing_target": 16070
+      }
+    },
+    {
+      "sensor_id": 12234753,
+      "station": "ITO",
+      "observations": {
+        "rows_received": 8515,
+        "rows_accepted": 7238,
+        "hours_retained": 7238,
+        "duplicate_rows_collapsed": 0,
+        "flagged": 40,
+        "low_coverage": 1237
+      },
+      "weather": {
+        "rows_received": 9240,
+        "rows_retained": 9240
+      },
+      "cams": {
+        "rows_received": 9240,
+        "rows_retained": 9240
+      },
+      "training_rows": 68277,
+      "skipped_samples": {
+        "insufficient_24h_history": 38,
+        "missing_target": 15891
+      }
+    },
+    {
+      "sensor_id": 12235020,
+      "station": "Dwarka Sector 8",
+      "observations": {
+        "rows_received": 8343,
+        "rows_accepted": 7605,
+        "hours_retained": 7605,
+        "duplicate_rows_collapsed": 0,
+        "flagged": 7,
+        "low_coverage": 731
+      },
+      "weather": {
+        "rows_received": 9240,
+        "rows_retained": 9240
+      },
+      "cams": {
+        "rows_received": 9240,
+        "rows_retained": 9240
+      },
+      "training_rows": 75394,
+      "skipped_samples": {
+        "insufficient_24h_history": 31,
+        "missing_target": 13670
+      }
+    }
+  ],
+  "candidate_metrics": [
+    {
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 30,
+        "l2_regularization": 1.0
+      },
+      "validation": {
+        "rmse": 24.0,
+        "mae": 17.103,
+        "bias": -0.602,
+        "r2": 0.9182
+      }
+    },
+    {
+      "parameters": {
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 40,
+        "l2_regularization": 5.0
+      },
+      "validation": {
+        "rmse": 18.676,
+        "mae": 13.363,
+        "bias": -0.144,
+        "r2": 0.9505
+      }
+    },
+    {
+      "parameters": {
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 60,
+        "l2_regularization": 10.0
+      },
+      "validation": {
+        "rmse": 19.033,
+        "mae": 13.585,
+        "bias": -0.257,
+        "r2": 0.9485
+      }
+    },
+    {
+      "parameters": {
+        "max_leaf_nodes": 127,
+        "min_samples_leaf": 30,
+        "l2_regularization": 1.0
+      },
+      "validation": {
+        "rmse": 12.663,
+        "mae": 9.297,
+        "bias": -0.093,
+        "r2": 0.9772
+      }
+    }
+  ],
+  "held_out_test": {
+    "rmse": 23.64,
+    "mae": 16.768,
+    "bias": 0.864,
+    "r2": 0.2644
+  },
+  "held_out_test_aqi": {
+    "rmse": 36.946,
+    "mae": 28.964,
+    "bias": 6.713,
+    "r2": 0.2581
+  },
+  "held_out_by_lead_hour": {
+    "1": {
+      "rmse": 20.898,
+      "mae": 15.325,
+      "bias": 0.028,
+      "r2": 0.4012
+    },
+    "3": {
+      "rmse": 23.564,
+      "mae": 16.353,
+      "bias": -0.282,
+      "r2": 0.2892
+    },
+    "6": {
+      "rmse": 22.48,
+      "mae": 15.895,
+      "bias": -0.405,
+      "r2": 0.3058
+    },
+    "12": {
+      "rmse": 22.409,
+      "mae": 16.353,
+      "bias": 0.418,
+      "r2": 0.2996
+    },
+    "24": {
+      "rmse": 22.794,
+      "mae": 16.594,
+      "bias": 1.355,
+      "r2": 0.2657
+    },
+    "48": {
+      "rmse": 23.942,
+      "mae": 16.759,
+      "bias": 1.053,
+      "r2": 0.2525
+    },
+    "72": {
+      "rmse": 24.814,
+      "mae": 17.392,
+      "bias": 1.202,
+      "r2": 0.2201
+    }
+  },
+  "held_out_baselines": {
+    "persistence": {
+      "rmse": 29.229,
+      "mae": 20.359,
+      "bias": -0.229,
+      "r2": -0.1245
+    },
+    "cams": {
+      "rmse": 76.886,
+      "mae": 52.455,
+      "bias": 42.688,
+      "r2": -6.781
+    },
+    "nudged_cams_12h": {
+      "rmse": 69.95,
+      "mae": 46.486,
+      "bias": 35.716,
+      "r2": -5.4405
+    },
+    "nudged_cams_24h": {
+      "rmse": 64.521,
+      "mae": 42.093,
+      "bias": 29.37,
+      "r2": -4.4796
+    },
+    "nudged_cams_48h": {
+      "rmse": 58.621,
+      "mae": 37.813,
+      "bias": 21.338,
+      "r2": -3.5232
+    }
+  },
+  "rmse_target_met": false,
+  "limitations": [
+    "trained on three Delhi government-monitor locations",
+    "chemical regime features use CAMS PM2.5 as proxy (WeatherAPI at inference)",
+    "historical FIRMS fire fields not included",
+    "held-out score is diagnostic, not operational guarantee"
+  ],
+  "sources": {
+    "observations": "https://api.openaq.org/v3",
+    "meteorology": "https://historical-forecast-api.open-meteo.com/v1/forecast",
+    "chemistry_predictor": "https://air-quality-api.open-meteo.com/v1/air-quality"
+  }
+}
