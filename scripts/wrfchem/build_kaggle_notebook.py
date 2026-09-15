@@ -11,25 +11,61 @@ Every URL and model contract used here was verified against live sources:
   * WorldPop India 1 km UNadj aggregated GeoTIFF (18 MB, verified 200)
   * FIRMS area API (VIIRS_SNPP_SP / MODIS_SP cover the Nov-2025 window; NRT
     does not) - verified live with real stubble-belt detections + FRP
-  * MOZCART emission contract read from WRF v4.6.0 source:
-      Registry/registry.chem package "mozcem" (emiss_opt==8):
+  * Mechanism identity, read from Registry/registry.chem + chem/chem_driver.F:
+        chem_opt==112 -> package "mozcart_kpp"  = MOZART gas + GOCART aerosol
+                        (chem_driver.F: CASE (MOZART_KPP) then CASE (MOZCART_KPP))
+        chem_opt==301 -> package "gocartracm_kpp" = GOCART + *RACM*
+                        (chem_driver.F: 'calling gocart and racm driver')
+      MOZCART is 112, NOT 301. This matters: the RACM gas mechanism consumes
+      RADM/RACM emission arrays (e_iso, e_olt, e_oli, e_ol2, e_xyl, e_tol,
+      e_csl, e_ket, e_ald, e_hcho, e_hc3/5/8, e_eth), while emiss_opt==8
+      (package "mozcem") allocates the 20 MOZART gas vars written below - so
+      chem_opt=301 + emiss_opt=8 leaves the gas chemistry unforced.
+  * MOZCART emission contract, package "mozcem" (emiss_opt==8):
         gases  (mol km^-2 hr^-1): E_CO E_NO E_NO2 E_BIGALK E_BIGENE E_C2H4
                E_C2H5OH E_C2H6 E_C3H6 E_C3H8 E_CH2O E_CH3CHO E_CH3COCH3
                E_CH3OH E_MEK E_SO2 E_TOLUENE E_NH3 E_ISOP E_C10H16
         aerosols (ug m^-2 s^-1):  E_PM_10 E_PM_25 E_BC E_OC E_SULF
-    module_emissions_anthropogenics.F: gases convert with
-    4.828e-4/rho*dt/(dz*60), aerosols with alt*dt/dz -> file units as above.
-  * io_style_emissions=2 semantics read from share/mediation_integrate.F v4.6.0:
-      the AUXINPUT5 alarm fires every auxinput5_interval minutes and each read
-      consumes the NEXT sequential record; the file name comes from &chem's
-      emi_inname (default 'wrfchemi_d<domain>_<date>') where <date> expands to
-      the FULL current timestamp 'YYYY-MM-DD_HH:MM:SS' (construct_filename2a +
-      current_timestr) - i.e. the file is re-selected (and re-opened) every
-      hour. So one 24-record file per day must be named
-      'wrfchemi_d01_2025-11-10_00:00:00' (the file's FIRST hour) and carry 24
-      hourly records, with auxinput5_interval=60 and frames_per_auxinput5=24.
-      (auxinput5_interval_m in &time_control is the minutes form - the shipped
-      namelist.input.chem uses it; plain auxinput5_interval is equivalent.)
+      emiss_inpt_opt==111 is package "emiss_inpt_mozcem" (the MOZCEM input
+      selector) - it is a real registry option, not a magic number.
+      module_emissions_anthropogenics.F: gases convert with
+      4.828e-4/rho*dt/(dz*60), aerosols with alt*dt/dz -> file units as above.
+      GOCART aerosol handling is shared by the whole GOCART family
+      (emissions_driver.F: CASE (GOCART_SIMPLE,MOZCART_KPP,T1_MOZCART_KPP,
+      GOCARTRADM2,GOCARTRACM_KPP)), so E_PM_25/E_PM_10/E_BC/E_OC/E_SULF feed
+      GOCART identically under 112 and 301.
+  * phot_opt enum, from Registry/registry.chem packages + chem/photolysis_driver.F:
+        1 = photmad   2 = photfastj   3 = ftuv   4 = tuv
+      photolysis_driver.F SELECT CASE handles ONLY photmad and photfastj, so
+      phot_opt=3 selects a scheme the runtime driver never computes - use 2
+      (Fast-J), which is also the scheme the MOZART mechanisms' 14-reaction
+      photolysis set expects (module_phot_fastj.F: nfastj_rxns = 14).
+  * Emissions dimension name, from Registry/registry.dimspec:
+        dimspec  +  2  namelist=kemit  z  emissions_zdim
+      The dataset (netCDF) name of the emission-level dimension is
+      'emissions_zdim' - NOT 'kemit'. Emission files must declare
+      emissions_zdim = kemit, and the state vars are dimensioned i+jf.
+  * Land-use categories: GEOGRID.TBL.ARW maps geog_data_res 'default' to
+      'modis_landuse_20class_30s_with_lakes' = 21 categories, so num_land_cat
+      must be 21 for the default geog set (the shipped test/em_real/
+      namelist.input.chem uses 21). It is DERIVED here from geo_em.d01.nc's
+      land_cat dimension rather than hardcoded, because a mismatch is a
+      real.exe fatal.
+  * io_style_emissions=2 semantics read from share/mediation_integrate.F v4.6.0
+      (SUBROUTINE med_read_wrf_chem_emiss):
+        - the AUXINPUT5 alarm fires every auxinput5_interval minutes;
+        - while grid%auxinput5_oid == 0 the file is OPENED with
+          construct_filename2a(emi_inname, id, 2, current_date_char), so <date>
+          is the FULL current stamp 'YYYY-MM-DD_HH:MM:SS';
+        - each firing reads the NEXT sequential record via input_auxinput5;
+        - after frames_per_auxinput5 reads the dataset is CLOSED and re-opened
+          on the next firing at the then-current stamp.
+      So one 24-record file per day, named 'wrfchemi_d01_2025-11-10_00:00:00'
+      (the day's first hour), with auxinput5_interval_m=60 and
+      frames_per_auxinput5=24, is exactly right. File variables are read by
+      name from the allocated i5r set, so the writer must emit precisely the
+      vars the selected packages allocate (25 here - no biogenic/aircraft
+      packages are selected, bio_emiss_opt=0 and emiss_opt_vol=0 are defaults).
       anthropogenic_emiss is NOT a v4.6.0 namelist variable (zero rconfig
       declarations, zero code references) - it would fatal the namelist read;
       the canonical namelist.input.chem &chem block omits it.
@@ -60,10 +96,10 @@ def code(text):
 
 
 # ---------------------------------------------------------------- title
-md("""# WRF-Chem for Delhi NCR — free Kaggle/Colab run (v5, URL- and source-verified)
+md("""# WRF-Chem for Delhi NCR — free Kaggle/Colab run (v6, URL- and source-verified)
 
 Produces **real wrfout NetCDF files** from an actual WRF-Chem v4.6.0 run (MOZCART gas phase +
-GOCART aerosols, `chem_opt=301`) over a nested Delhi-NCR domain, so the repo's
+GOCART aerosols, `chem_opt=112`) over a nested Delhi-NCR domain, so the repo's
 `/api/v1/validation/wrf-compare` endpoint can score WRF-Chem against CAMS reanalysis.
 
 **Why v1 produced nothing, fixed here:** v1 ran with Internet OFF and failed every apt/wget call;
@@ -78,6 +114,21 @@ nonexistent `anthropogenic_emiss` key, enables `aer_ra_feedback=1` (the two-way 
 coupling), sets the hourly emission cadence (`auxinput5_interval_m=60`, `frames_per_auxinput5=24`)
 with full-timestamp `wrfchemi_d0X_<day>_00:00:00` filenames, corrects `num_land_cat=24`, and runs
 `wrf.exe` synchronously so Save & Run All completes the full 72 h.
+
+**v6** (mechanism + dataset contract re-audited against WRF/WPS v4.6.0 source) fixes five defects
+that would each have broken the run or silently zeroed the chemistry:
+
+| Was | Is | Evidence |
+|---|---|---|
+| `chem_opt = 301` ("MOZCART") | **112** — `301` is `gocartracm_kpp` = GOCART + **RACM** | `registry.chem` packages; `chem_driver.F` CASE labels |
+| `phot_opt = 3` (= `ftuv`) | **2** — `photfastj` | `registry.chem` phot packages; `photolysis_driver.F` handles only 1/2 |
+| wrfchemi dim named `kemit` | **`emissions_zdim`** | `registry.dimspec`: `dimspec + 2 namelist=kemit z emissions_zdim` |
+| `num_land_cat = 24` hardcoded | **derived from `geo_em.d01.nc`** (= 21 for `geog_data_res='default'`) | `GEOGRID.TBL.ARW`: `default:modis_landuse_20class_30s_with_lakes` |
+| `SPEC_DIR` NameError in the EDGAR cell | expected count computed from `SECTORS` | the cell died before any emission file was built |
+
+It also fails loudly instead of silently: each GFS analysis is size-checked, the met_em output is
+checked for the mandatory surface/soil fields, and the emission writer asserts its 25-variable
+contract against the registry list before writing.
 
 **Runtime on a free 4-vCPU session:** compile ~50–80 min · WPS+real ~25 min · wrfchemi ~10 min ·
 72-h run ~2 h (24/6 km fast config, OpenMP) — fits one 12-h session with margin.
@@ -94,8 +145,8 @@ Save Version → Save & Run All. Nothing below works offline.""")
 code(r"""# 0 · Environment probe, hard internet check, all run configuration in one place
 import os, socket, sys, math, json
 
-NB_VERSION = "v5"
-print("notebook build:", NB_VERSION)  # must print v5 — proves the fixed notebook is running
+NB_VERSION = "v6"
+print("notebook build:", NB_VERSION)  # must print v6 — proves the fixed notebook is running
 
 def check_internet(host="github.com"):
     try:
@@ -118,6 +169,11 @@ CFG = {
     "E_WE": (110, 100), "E_SN": (90, 100),      # (d01, d02) grid sizes
     "START": "2025-11-10_00",                    # peak stubble-burning window
     "END":   "2025-11-13_00",                    # 72 h
+    # Emission vertical levels. 1 = surface anthropogenic emissions, which is
+    # what the wrfchemi files this notebook writes carry (dimension name
+    # 'emissions_zdim' of length KEMIT - see registry.dimspec). namelist kemit
+    # and the file dimension MUST agree.
+    "KEMIT": 1,
     "WRF_VER": "v4.6.0", "WPS_VER": "v4.6.0",
     "OMP_NUM_THREADS": str(min(4, os.cpu_count() or 2)),
 }
@@ -173,11 +229,12 @@ os.environ["OMP_NUM_THREADS"] = CFG["OMP_NUM_THREADS"]
 subprocess.run(["apt-get", "update", "-qq"], capture_output=True)
 r = subprocess.run(["apt-get", "install", "-y", "-qq", "gfortran", "gcc", "g++", "cpp", "m4",
                     "csh", "tcsh", "perl", "make", "wget", "curl", "unzip", "file",
+                    "flex", "libfl-dev",         # REQUIRED for the KPP build step
                     "libnetcdf-dev", "libnetcdff-dev", "libopenmpi-dev", "openmpi-bin"],
                    capture_output=True, text=True)
 if r.returncode != 0:
     print(r.stderr[-2000:]); sys.exit("apt install failed - is Internet ON?")
-for b in ("gfortran", "nc-config", "nf-config", "mpirun"):
+for b in ("gfortran", "nc-config", "nf-config", "mpirun", "flex"):
     ok = subprocess.run(["which", b], capture_output=True).returncode == 0
     print(f"{b}: {'ok' if ok else 'MISSING'}")
 
@@ -221,13 +278,17 @@ import os, json, subprocess, re, pathlib, sys
 CFG = json.load(open(f"{os.environ['WORK']}/cfg.json")); W = CFG["WORK"]
 os.chdir(f"{W}/WRF")
 if not pathlib.Path("configure.wrf").exists():
-    # v4.6 semantics: 'chem' is a POSITIONAL arg ('./configure chem'); BOTH runs
-    # need it or the build silently loses chemistry. The menu prints
+    # v4.6 semantics: 'chem' and 'kpp' are POSITIONAL args
+    # ('./configure chem kpp'). BOTH are needed: 'chem' alone adds
+    # -DWRF_CHEM/-DBUILD_CHEM=1 to configure.wrf, but the MOZCART chemistry
+    # (chem_opt=112 = mozcart_kpp) is a KPP mechanism that is only built when
+    # the 'kpp' arg adds -DWRF_KPP (see `./configure` usage line + compileflags
+    # lines 484/488). The menu prints
     # '  N. (serial)   M. (smpar) ... GNU (gfortran/gcc)' - numbers and the
     # compiler description on ONE line, numbered cumulatively across stanzas.
     menu = ""
     try:
-        r = subprocess.run(["./configure", "chem"], stdin=subprocess.DEVNULL,
+        r = subprocess.run(["./configure", "chem", "kpp"], stdin=subprocess.DEVNULL,
                            capture_output=True, text=True, timeout=60)
         menu = r.stdout + r.stderr
     except subprocess.TimeoutExpired as e:  # normal: Config.pl loops on EOF stdin
@@ -255,13 +316,17 @@ if not pathlib.Path("configure.wrf").exists():
     with open("opt_input", "w") as f:
         f.write(f"{opt}\n1\n")     # line 1: stanza, line 2: nesting prompt
     with open("opt_input") as fin:
-        p2 = subprocess.run(["./configure", "chem"], stdin=fin, capture_output=True, text=True)
+        p2 = subprocess.run(["./configure", "chem", "kpp"], stdin=fin, capture_output=True, text=True)
     open("configure_out.txt", "w").write(p2.stdout + p2.stderr)
     print((p2.stdout + p2.stderr)[-400:])
 assert pathlib.Path("configure.wrf").exists(), "configure.wrf missing"
 _cw = pathlib.Path("configure.wrf").read_text()
+# -DWRF_CHEM/-DBUILD_CHEM=1 comes from the 'chem' arg (configure:484);
+# -DWRF_KPP only when the 'kpp' arg is also present (configure:488), and the
+# KPP solver is what mozcart_kpp (chem_opt=112) compiles against.
 assert "WRF_CHEM" in _cw or "BUILD_CHEM" in _cw, "configure.wrf lacks chem flags - rerun with 'chem' arg"
-print("WRF configured for chem")""")
+assert "WRF_KPP" in _cw, "configure.wrf lacks the KPP flag - rerun as './configure chem kpp'"
+print("WRF configured for chem + KPP")""")
 
 code(r"""# 4 · Compile WRF (chem-enabled), ~50-80 min on 4 vCPU. Fails loudly with the log tail.
 #      NOTE: NEVER run './clean -a' here - the v4.6.0 clean script DELETES
@@ -338,9 +403,10 @@ nl = f'''&share
  j_parent_start    =  {CFG['J_PARENT']},  {CFG['J_PARENT']},
  e_we              =  {CFG['E_WE'][0]},  {CFG['E_WE'][1]},
  e_sn              =  {CFG['E_SN'][0]},  {CFG['E_SN'][1]},
- geog_data_res     = 'default','default',   # USGS 24-category land use ->
-                                               # num_land_cat MUST be 24 in
-                                               # namelist.input or real.exe fatals
+ ! 'default' resolves (GEOGRID.TBL.ARW) to
+ ! modis_landuse_20class_30s_with_lakes = 21 land categories; cell 8
+ ! derives num_land_cat from geo_em.d01.nc so it cannot disagree.
+ geog_data_res     = 'default','default',
  dx = {CFG['DX_D01']},
  dy = {CFG['DX_D01']},
  map_proj = 'lambert',
@@ -381,7 +447,11 @@ while t <= t1:
         url = (f"https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{t.strftime('%Y%m%d')}/"
                f"{t.strftime('%H')}/atmos/gfs.t{t.strftime('%H')}z.pgrb2.0p25.anl")
         subprocess.run(["wget", "-q", url, "-O", dest], check=True)
-    print(dest, int(os.path.getsize(dest) / 1e6), "MB")
+    mb = os.path.getsize(dest) / 1e6
+    # A failed wget with check=True already raised; this catches a truncated or
+    # error-page download that still returned 0 (GFS analyses are ~430-510 MB).
+    assert mb > 100, f"{dest} is only {mb:.1f} MB - download did not complete"
+    print(dest, int(mb), "MB")
     t += timedelta(hours=6)
 subprocess.run(["cp", "ungrib/Variable_Tables/Vtable.GFS", "Vtable"], check=True)
 subprocess.run(["./link_grib.csh", "GFS:"], check=True)
@@ -398,6 +468,12 @@ ds = Dataset(mets[0])
 CFG["NUM_METGRID_LEVELS"] = len(ds.dimensions["bottom_top"])
 soil_dims = [k for k in ds.dimensions if "soil" in k.lower()]
 CFG["NUM_METGRID_SOIL_LEVELS"] = len(ds.dimensions[soil_dims[0]]) if soil_dims else 4
+# The Vtable/field-set contract: real.exe fatals if a mandatory surface or soil
+# field is missing, and the message is far from the cause. Check it here.
+_need = ("T2", "PSFC", "SOILHGT", "SKINTEMP", "LANDMASK", "SM000010", "ST000010")
+_missing = [v for v in _need if v not in ds.variables]
+assert not _missing, f"met_em.d01 lacks {_missing} - the GFS/Vtable field set is incomplete"
+print("met_em mandatory fields present:", list(_need))
 ds.close()
 json.dump(CFG, open(f"{W}/cfg.json", "w"))
 print("num_metgrid_levels:", CFG["NUM_METGRID_LEVELS"],
@@ -405,8 +481,26 @@ print("num_metgrid_levels:", CFG["NUM_METGRID_LEVELS"],
 
 code(r"""# 8 · namelist.input (complete &time_control + verified chem contract) -> real.exe
 import os, json, subprocess, pathlib
+from netCDF4 import Dataset
 CFG = json.load(open(f"{os.environ['WORK']}/cfg.json")); W = CFG["WORK"]
 time_step = int(CFG["DX_D01"] / 1000 * 6)   # 6 s per km of dx - the stable guidance
+
+# --- every input this namelist needs must already exist --------------------
+# These come from cells 0 and 7. On a resumed session that skipped one, fail
+# with a sentence instead of a bare KeyError.
+for key in ("NUM_METGRID_LEVELS", "NUM_METGRID_SOIL_LEVELS", "KEMIT"):
+    assert key in CFG, f"cfg.json has no {key} - rerun cell 0 and cell 7 before this cell"
+
+# --- num_land_cat is DERIVED, never assumed --------------------------------
+# GEOGRID.TBL.ARW maps geog_data_res 'default' to
+# modis_landuse_20class_30s_with_lakes = 21 categories, so the old hardcoded 24
+# was a real.exe land-category fatal. Read what geogrid actually wrote.
+_geo = Dataset(f"{W}/WPS/geo_em.d01.nc")
+land_cat = len(_geo.dimensions["land_cat"])
+_geo.close()
+assert 10 <= land_cat <= 40, f"suspicious land_cat={land_cat} in geo_em.d01.nc"
+print("num_land_cat derived from geo_em.d01.nc:", land_cat)
+
 nl = f'''&time_control
  run_days   = 3,
  start_year = 2025, 2025,
@@ -419,8 +513,8 @@ nl = f'''&time_control
  end_hour   = 00,   00,
  interval_seconds = 21600,
  input_from_file = .true., .true.,
- history_interval = 180, 60,   # d01 3-hourly (context), d02 hourly (validation)
- frames_per_outfile = 24, 24,  # ~1 GB/day/domain; keeps /kaggle/working under quota
+ history_interval = 180, 60,   ! d01 3-hourly (context), d02 hourly (validation)
+ frames_per_outfile = 24, 24,  ! ~1 GB/day/domain; keeps /kaggle/working under quota
  restart = .false.,
  restart_interval = 4320,
  io_form_history = 2,
@@ -465,25 +559,33 @@ nl = f'''&time_control
  cu_physics = 1, 0,
  cudt = 5, 0,
  surface_input_source = 3,
- num_land_cat = 24,
+ num_land_cat = {land_cat},
 /
 &chem
  chemdt = 5,
  io_style_emissions = 2,
- chem_opt = 301, 301,
+ chem_opt = 112, 112,          ! MOZCART_KPP: MOZART gas + GOCART aerosol.
+                               ! 301 is gocartracm_kpp (GOCART + RACM) and does
+                               ! NOT consume the mozcem gas emissions written
+                               ! below, so the gas chemistry would be unforced.
  emiss_opt = 8, 8,
  emiss_inpt_opt = 111, 111,
  emi_inname = 'wrfchemi_d<domain>_<date>',
  aer_ra_feedback = 1, 1,
  biomass_burn_opt = 0, 0,
- phot_opt = 3, 3,
+ phot_opt = 2, 2,              ! photfastj (Fast-J). photolysis_driver.F
+                               ! handles only photmad(1)/photfastj(2); 3 is
+                               ! ftuv, which is initialised but never driven.
  gas_bc_opt = 1, 1,
  gas_ic_opt = 1, 1,
  aer_bc_opt = 1, 1,
  aer_ic_opt = 1, 1,
  have_bcs_chem = .false.,
  chem_in_opt = 0,
- kemit = 1,
+ kemit = {CFG['KEMIT']},       ! must equal the wrfchemi emissions_zdim length
+ bio_emiss_opt = 0, 0,         ! no MEGAN: no biogenic flux in these files
+ dmsemis_opt = 0,
+ seas_opt = 0,
 /
 &dynamics
  w_damping = 1,
@@ -512,6 +614,25 @@ nl = f'''&time_control
 os.makedirs(f"{W}/run", exist_ok=True)
 os.system(f"cp -n {W}/WRF/run/* {W}/run/ 2>/dev/null")
 open(f"{W}/run/namelist.input", "w").write(nl)
+
+# --- the namelist on disk must carry the source-verified contract ----------
+# These are the values audited against WRF v4.6.0 (registry packages,
+# chem_driver.F CASE labels, photolysis_driver.F). If a later edit changes one,
+# this fails immediately instead of silently running different chemistry.
+_contract = {
+    "chem_opt = 112, 112": "MOZCART_KPP (MOZART gas + GOCART aerosol)",
+    "emiss_opt = 8, 8": "mozcem 25-variable emission contract",
+    "emiss_inpt_opt = 111, 111": "emiss_inpt_mozcem",
+    "phot_opt = 2, 2": "photfastj (Fast-J)",
+    f"num_land_cat = {land_cat}": "derived from geo_em.d01.nc",
+    f"kemit = {CFG['KEMIT']}": "must equal wrfchemi emissions_zdim",
+    "aer_ra_feedback = 1, 1": "two-way aerosol<->radiation<->PBL coupling",
+    "io_style_emissions = 2": "dated wrfchemi files",
+}
+for entry, why in _contract.items():
+    assert entry in nl, f"namelist lost {entry!r} ({why})"
+print("namelist contract OK:", {k: v for k, v in _contract.items()})
+
 os.chdir(f"{W}/run")
 os.system(f"ln -sf {W}/WPS/met_em.d0* .")
 if not (pathlib.Path("wrfinput_d01").exists() and pathlib.Path("wrfinput_d02").exists()):
@@ -575,7 +696,7 @@ for sp in SECTORS:
             z.extractall(f"{W}/edgar")
 ncs = [x for x in os.listdir(f'{W}/edgar') if x.endswith('.nc')]
 print(f"downloaded {need} new; EDGAR nc files: {len(ncs)}")
-EXPECTED = len(SPEC_DIR) * len(SECTORS)
+EXPECTED = sum(len(v) for v in SECTORS.values())   # 62 sector grids, not species x sectors
 if len(ncs) < EXPECTED:
     print("sample names:", ncs[:3]); sys.exit(f"EDGAR download incomplete: {len(ncs)}/{EXPECTED}")
 if not os.path.exists(f"{W}/edgar/worldpop_ind.tif"):
@@ -797,7 +918,9 @@ for dom in (1, 2):
         nc = Dataset(out, "w", format="NETCDF3_64BIT_OFFSET")
         nc.createDimension("Time", 24)
         nc.createDimension("DateStrLen", 19)
-        nc.createDimension("kemit", 1)
+        nc.createDimension("emissions_zdim", CFG["KEMIT"])   # registry.dimspec: the
+        # dataset name of the emission-level dimension is 'emissions_zdim', NOT
+        # 'kemit' - WRF looks the dimension up by this name when it reads the file
         nc.createDimension("south_north", ny)
         nc.createDimension("west_east", nx)
         tv = nc.createVariable("Times", "S1", ("Time", "DateStrLen"))
@@ -806,11 +929,21 @@ for dom in (1, 2):
         nc.createVariable("XLAT", "f4", ("Time", "south_north", "west_east"))[:] = lat2d[None]
         nc.createVariable("XLONG", "f4", ("Time", "south_north", "west_east"))[:] = lon2d[None]
         for name in GASES + AERS:
-            var = nc.createVariable(name, "f4", ("Time", "kemit", "south_north", "west_east"))
+            var = nc.createVariable(name, "f4", ("Time", "emissions_zdim", "south_north", "west_east"))
             var[:] = np.asarray(emis[name], dtype=np.float32)[:, None]
             var.units = "mol km-2 hr-1" if name in GASES else "ug m-2 s-1"
         nc.close()
-        print(f"wrote {out} {os.path.getsize(out) // 1e6} MB | E_CO h12 mean "
+        # The reader picks variables out of this file by name, so verify the
+        # file really is the contract WRF will look for: 25 vars, one emission
+        # level named emissions_zdim (== namelist kemit), 24 hourly records.
+        _chk = Dataset(out)
+        _dims = {k: len(v) for k, v in _chk.dimensions.items()}
+        _vars = sorted(_chk.variables)
+        _chk.close()
+        assert _dims.get("emissions_zdim") == CFG["KEMIT"], f"{out}: emissions_zdim {_dims}"
+        assert _dims.get("Time") == 24, f"{out}: {_dims.get('Time')} records, want 24"
+        assert set(_vars) >= set(GASES + AERS), f"{out}: missing {set(GASES + AERS) - set(_vars)}"
+        print(f"wrote {out} {os.path.getsize(out) // 1e6} MB | dims {_dims} | E_CO h12 mean "
               f"{float(np.mean(emis['E_CO'][12])):.2f} | E_PM_25 mean {float(np.mean(emis['E_PM_25'])):.4f}")
 print("wrfchemi build complete")""")
 
@@ -914,14 +1047,16 @@ md("""## If something fails
 | `NO INTERNET` at cell 0 | Internet OFF in Settings | Settings → Internet ON (phone verification), Save Version → Save & Run All |
 | apt/wget failures after cell 0 | transient DNS | rerun the cell; all downloads are idempotent (existence checks, `wget -c`) |
 | `GNU (serial/smpar) menu line not found` (cell 3) | menu wording changed | open `WRF/menu_chem.txt`, find the GNU line, read its `(smpar)` number, write that number then `1` into `WRF/opt_input`, rerun cell 3 |
-| `configure.wrf lacks chem flags` (cell 3) | configure ran without the positional `chem` arg | must be `./configure chem` (v4.6); the cell now asserts `WRF_CHEM`/`BUILD_CHEM` landed in `configure.wrf` |
+| `configure.wrf lacks chem flags` (cell 3) | configure ran without the positional `chem` arg | must be `./configure chem kpp` (v4.6); the cell asserts `WRF_CHEM`/`BUILD_CHEM` *and* `WRF_KPP` landed in `configure.wrf` (the KPP solver is required for `chem_opt=112` = `mozcart_kpp`) |
 | `You must run the 'configure' script...` seconds after `WRF configured for chem` | the compile cell ran `./clean -a`, which deletes `configure.wrf` | clean removed from cell 4 (v5); a fresh extract needs no cleaning |
-| WRF compile fails | rare toolchain mismatch | the log tail is printed; usually rerunning cell 4 after `./clean -a` fixes it |
-| real.exe fails on met fields | level-count mismatch | cell 7 reads the counts from met_em automatically; if you hand-edited the namelist, restore it |
-| real.exe fails mentioning land categories | num_land_cat mismatch | the geog set is USGS (24 cats); cell 8's namelist sets `num_land_cat = 24` - keep them consistent |
+| WRF compile fails | rare toolchain mismatch | the log tail is printed; usually rerunning cell 4 after `./clean -a` fixes it. The KPP step also needs the `flex`/`libfl-dev` packages cell 1 installs |
+| real.exe fails on met fields | level-count or field-set mismatch | cell 7 derives the counts from met_em *and* asserts the mandatory surface/soil fields (T2, PSFC, SOILHGT, SKINTEMP, LANDMASK, SM/ST000010); if you hand-edited the namelist, restore it |
+| real.exe fails mentioning land categories | num_land_cat mismatch | `geog_data_res='default'` resolves to MODIS 20-class + lakes = **21** categories; cell 8 now derives `num_land_cat` from `geo_em.d01.nc`, so keep the derivation instead of hardcoding 24 |
+| namelist lost `<entry>` (cell 8) | an edit dropped a source-verified value | the `chem_opt=112 / phot_opt=2 / emiss_opt=8 / emiss_inpt_opt=111` set is pinned by an assert - restore the value and see the module docstring for why |
+| met_em lacks `<field>` (cell 7) | GFS file truncated or wrong product | the assert names the missing field; re-download (files are ~430–510 MB and are size-checked) |
 | `EDGAR ... grid ... vs ... lon values` | inventory format change | the cell prints the file head as FORMAT DEBUG; adjust `read_edgar_txt` to the printed layout |
 | FIRMS "no key" | env not set | add `FIRMS_API_KEY` via notebook Add-ons → Secrets → Environment variable; the run continues with anthro-only (documented) |
-| wrfout PM2.5 ≈ 0 (cell 13) | EDGAR parse fell back | check the per-species parse lines in cell 10 output |
+| wrfout PM2.5 ≈ 0 (cell 13) | EDGAR parse fell back, or files missed the reader | check the per-species parse lines in cell 10 output; section 4 of the module docstring records the filename/dim/variable contract |
 | session died mid-run | 12-h cap / disconnect | reattach, run cell 0b; compiled exes persist in /kaggle/working; resume from the failed cell |
 
 Want a coupled-model reference **today** without compiling anything? IITM SAFAR/EWS runs
@@ -929,13 +1064,35 @@ WRF-Chem operationally for this exact domain; the repo ships
 `backend/app/services/safar_service.py` as a keyless reference provider at
 `/api/v1/validation/safar`.""")
 
-# self-check: writer contract must equal the registry mozcem package line verbatim
+# self-checks: the notebook must equal the source-verified contracts verbatim.
 REGISTRY_LINE = ("e_co,e_no,e_no2,e_bigalk,e_bigene,e_c2h4,e_c2h5oh,e_c2h6,e_c3h6,"
                  "e_c3h8,e_ch2o,e_ch3cho,e_ch3coch3,e_ch3oh,e_mek,e_so2,e_toluene,"
                  "e_nh3,e_isop,e_c10h16,e_pm_10,e_pm_25,e_bc,e_oc,e_sulf")
 writer_set = {v.lower() for v in MOZCEM_GASES + MOZCEM_AERS}
 registry_set = set(REGISTRY_LINE.split(","))
 assert writer_set == registry_set, "writer contract drift vs registry: " + str(writer_set ^ registry_set)
+
+# Source-verified constants (WRF v4.6.0 registry packages; see module docstring):
+#   chem_opt=112        <- package "mozcart_kpp" (MOZART gas + GOCART aerosol)
+#   emiss_opt=8         <- package "mozcem" (the 25 variables above)
+#   emiss_inpt_opt=111  <- package "emiss_inpt_mozcem"
+#   phot_opt=2          <- package "photfastj" (the runtime driver computes 1/2)
+#   emissions dim       <- registry.dimspec: dataset name 'emissions_zdim'
+_CODE = "\n".join(
+    "".join(c.get("source", [])) for c in NB["cells"] if c.get("cell_type") == "code"
+)
+assert '"./configure", "chem", "kpp"' in _CODE
+assert '"KEMIT": 1' in _CODE
+assert "configure.wrf" in _CODE and "WRF_KPP" in _CODE
+for needle in ('chem_opt = 112, 112', 'emiss_opt = 8, 8',
+               'emiss_inpt_opt = 111, 111', 'phot_opt = 2, 2',
+               '"emissions_zdim", CFG["KEMIT"]',
+               '("Time", "emissions_zdim", "south_north", "west_east")'):
+    assert needle in _CODE, f"notebook text lost the verified fragment: {needle!r}"
+_stale = [s for s in ("chem_opt = 301", "phot_opt = 3", "num_land_cat = 24")
+          if s in _CODE]
+assert not _stale, f"stale v5 mechanism values still present in code cells: {_stale}"
+print("self-checks OK: 25-var contract + 112/8/111/2 mechanism set + emissions_zdim")
 
 with open("scripts/wrfchem/kaggle_wrfchem_run.ipynb", "w", encoding="utf-8") as f:
     json.dump(NB, f, indent=1, ensure_ascii=True)
