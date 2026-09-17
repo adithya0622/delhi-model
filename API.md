@@ -570,6 +570,50 @@ prediction window it rolls out on its own generated medians.
 
 ---
 
+## GET `/api/v1/forecast/72hr-stations`
+
+The city-scale forecast plus a **station-wise layer**: every catalog station
+(50 Delhi NCR CPCB monitors) gets its own 72-h calibrated series and
+recomputed AQI. The city forecast is computed exactly once (same serving path
+as `72hr-chronos`, untouched in the response) and each station's series is
+derived by multiplying its per-species **offset ratio** onto the city values.
+
+Offset hierarchy per species, always labelled in the response:
+
+1. **`measured_openaq_vs_cams_cell`** — station's OpenAQ hourly archive paired
+   against the CAMS training-cell archive over the trailing 60 days (≥200
+   paired hours required, ratios clamped to [0.5, 2.0]).
+2. **`iqair_live_single_hour`** — when the station's OpenAQ feed is dead (many
+   CPCB sensors are), a live IQAir nearest-monitor anchor is inverted from US
+   AQI to PM2.5 via the app's own EPA breakpoint table (only when PM2.5 is the
+   dominant pollutant) and ratioed against the CAMS cell at the observation's
+   IST hour. PM2.5 only; n_hours = 1.
+3. **`catalog_prior`** — the static station `aqi_factor` from the catalog.
+
+Each station hour re-computes the official CPCB AQI from its **own** adjusted
+concentrations (max of six sub-indices), so a station's AQI, category, and
+dominant pollutant can legitimately differ from the city's. The response
+carries `station_layer` with per-station `offset_basis`, full `adjustments`
+audit trail (city value → ratio → station value per species), `most_polluted`
+/`cleanest` rankings, and the offsets artifact's `generated_at`.
+
+```bash
+curl -s "http://localhost:8000/api/v1/forecast/72hr-stations" | python -m json.tool
+# admin: recompute measured offsets (requires X-API-Key; network-bound, paced)
+curl -s -X POST "http://localhost:8000/api/v1/forecast/station-offsets/refresh" -H "X-API-Key: $APP_API_KEY"
+```
+
+**Honest scope:** the Chronos specialists are trained on the CAMS 0.25°
+(≈27 km) cell containing Delhi — the offset layer differentiates stations
+relative to that city-scale cell forecast; it does not re-run the model per
+station. Stations on `catalog_prior` carry a static geographic factor, not a
+measurement. The offsets artifact lives in
+`backend/app/artifacts/station_offsets/offsets.json` (persisted across
+restarts; `stations_measured`, `stations_iqair_live`, and
+`stations_catalog_prior` in the response always sum to `station_count`).
+
+---
+
 ## CPCB AQI Category Reference
 
 | Category | AQI Range | Health Impact |

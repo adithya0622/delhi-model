@@ -3,6 +3,12 @@
 Offline by construction: the happy-path tests mount a FAKE Chronos pipeline
 (deterministic token-sample tensor) so no weights, downloads, or long generate
 loops are needed; fallback paths are exercised via the same loader seams.
+
+The _FakePipeline mocks construct torch tensors at fixture time. When the OS
+blocks torch's DLLs (Windows Application Control can — WinError 4551), those
+inference tests SKIP honestly rather than fail: the runtime genuinely cannot
+serve the model on such a machine, and the endpoint degrades to the ML
+fallback by design (covered by the loader-failure tests below).
 """
 from __future__ import annotations
 
@@ -13,6 +19,21 @@ import pytest
 
 from app.services import chronos_forecast_service as cfs
 from app.api.v1.ml_forecast_endpoint import compute_hour_aqi
+
+
+def _torch_available() -> bool:
+    try:
+        import torch  # noqa: F401
+        return True
+    except Exception:
+        return False
+
+
+_requires_torch = pytest.mark.skipif(
+    not _torch_available(),
+    reason="torch unavailable on this machine (OS policy blocked its DLLs); "
+           "runtime degrades to the ML fallback path",
+)
 
 
 # ── AQI helper consistency with the rest of the API ─────────────────────────
@@ -104,6 +125,7 @@ def _full_history():
     return {s: [_FakePipeline.base[s]] * 168 for s in ("pm2_5", "pm10", "no2", "o3", "so2", "co")}
 
 
+@_requires_torch
 def test_predict_happy_path_shape_and_quantiles(_fake_loader):
     history = _full_history()
     history["co"] = [1.2] * 168  # mg/m³ native scale → factor 1000 for AQI
@@ -126,6 +148,7 @@ def test_predict_happy_path_shape_and_quantiles(_fake_loader):
     assert hours[-1]["hour_index"] == 72
 
 
+@_requires_torch
 def test_predict_rejects_species_without_history(_fake_loader):
     history = _full_history()
     history["o3"] = []
@@ -133,6 +156,7 @@ def test_predict_rejects_species_without_history(_fake_loader):
     assert hours is None and "o3" in (status.get("reason") or "")
 
 
+@_requires_torch
 def test_predict_clamps_negatives_and_pads_short_history(_fake_loader):
     history = {s: [_FakePipeline.base[s]] * 168 for s in ("pm2_5", "pm10", "no2", "o3", "so2", "co")}
     history["pm2_5"] = [None] * 100 + [-5.0, float("nan")] + [90.0] * 66
@@ -211,6 +235,7 @@ def test_endpoint_falls_back_when_chronos_unavailable(_offline_endpoint, monkeyp
     assert result["chronos_status"].get("reason")
 
 
+@_requires_torch
 def test_endpoint_serves_chronos_forecast(_offline_endpoint, monkeypatch, _fake_loader):
     ep = _offline_endpoint
     result = asyncio.run(ep.forecast_72hr_chronos(
@@ -234,6 +259,7 @@ def test_status_endpoint_shape(_loader_none):
     assert status["mode"] == "none" and status.get("reason")
 
 
+@_requires_torch
 def test_endpoint_serves_chronos2_when_selected(_offline_endpoint, monkeypatch, _fake_loader):
     """When the measured winner is Chronos-2, the endpoint dispatches to the
     C2 path with covariates and labels the response honestly."""
@@ -277,6 +303,7 @@ class _FakeC2Pipeline:
         return [torch.ones((6, 3, prediction_length)) * 45.0]
 
 
+@_requires_torch
 def test_predict_c2_happy_path_with_covariates(_fake_loader, monkeypatch):
     monkeypatch.setattr(cfs, "_load_chronos2", lambda: (_FakeC2Pipeline(), "loaded fake"))
     history = _full_history()
@@ -365,6 +392,7 @@ def test_ft_covariate_order_matches_trainer():
     assert len(order) == 5 + 2 + 9 + 4  # 5 co-pollutants + AOD/dust + 9 met + 4 calendar
 
 
+@_requires_torch
 def test_predict_ft_happy_path_and_self_past_channel(monkeypatch):
     _patch_ft_ready(monkeypatch)
     covs = {
@@ -409,6 +437,7 @@ def test_ft_serving_model_gates_and_override(monkeypatch):
     assert cfs.serving_model() == "t5"  # default when gates not PASS
 
 
+@_requires_torch
 def test_endpoint_serves_ft_variant(_offline_endpoint, monkeypatch):
     ep = _offline_endpoint
     monkeypatch.setattr(ep, "serving_model", lambda: "chronos2_ft")

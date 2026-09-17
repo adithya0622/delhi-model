@@ -342,7 +342,11 @@ def predict_72hr_chronos(
     (loaded, load_reason) = _load_pipeline()
     if loaded is None:
         return None, {**base, "reason": load_reason}
-    (imported, _import_reason) = _import_chronos()
+    (imported, import_reason) = _import_chronos()
+    if imported is None:
+        # torch unavailable (e.g. OS policy blocks its DLLs) — degrade
+        # honestly instead of crashing on an unpack of None.
+        return None, {**base, "reason": f"chronos runtime unavailable: {import_reason}"}
     torch, _pipeline_cls = imported
     pipeline, meta = loaded
 
@@ -458,7 +462,6 @@ def predict_72hr_chronos2_finetuned(
     (None, reason) so the endpoint can degrade honestly.
     """
     import numpy as np
-    import torch
 
     base: dict[str, Any] = {
         **chronos_model_status(),
@@ -469,6 +472,11 @@ def predict_72hr_chronos2_finetuned(
     }
     if not finetuned_serving_ready():
         return None, {**base, "reason": "fine-tuned specialists not ready or acceptance gates not PASS"}
+
+    try:
+        import torch
+    except Exception as exc:  # OS-level DLL blocks etc. — degrade, don't crash
+        return None, {**base, "reason": f"torch runtime unavailable: {exc}"}
 
     times_raw = list((met_forecast.get("hourly") or {}).get("time") or [])
     if len(times_raw) < HORIZON_HOURS:
