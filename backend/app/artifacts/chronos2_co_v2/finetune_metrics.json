@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-09-18T00:45:11.647649",
+  "holdout_start": "2025-09-12",
+  "train_origins": 595,
+  "eval_origins": 48,
+  "context_hours": 720,
+  "horizon": 72,
+  "gates": {
+    "pm2_5_rmse_lt_15": null,
+    "pm2_5_r2_gt_087": null
+  },
+  "leakage_note": "target species' future never in inputs; future covariates = other-species CAMS + AOD/dust + HRES met + calendar (operationally published before local measurements; the v3/v4 GBDT information set); chronological split; future-covariate ablation reported separately",
+  "species": {
+    "co": {
+      "mae": 158.211,
+      "rmse": 250.078,
+      "r2": 0.8109,
+      "mean": 851.521,
+      "nrmse": 0.2937,
+      "n": 3456
+    }
+  },
+  "species_gates": {
+    "co": {
+      "evaluated": true,
+      "rmse_lt_15": false,
+      "nrmse_le_0p12": false,
+      "r2_gt_087": false,
+      "pass": false
+    }
+  },
+  "gates_verdict": "FAIL"
+}

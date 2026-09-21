@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-09-13T19:12:34.070818",
+  "holdout_start": "2025-09-12",
+  "train_origins": 595,
+  "eval_origins": 48,
+  "context_hours": 720,
+  "horizon": 72,
+  "gates": {
+    "pm2_5_rmse_lt_15": true,
+    "pm2_5_r2_gt_087": true
+  },
+  "leakage_note": "target species' future never in inputs; future covariates = other-species CAMS + AOD/dust + HRES met + calendar (operationally published before local measurements; the v3/v4 GBDT information set); chronological split; future-covariate ablation reported separately",
+  "species": {
+    "pm2_5": {
+      "mae": 6.317,
+      "rmse": 9.069,
+      "r2": 0.9649,
+      "mean": 86.279,
+      "nrmse": 0.1051,
+      "n": 3456,
+      "zero_shot": {
+        "mae": 6.407,
+        "rmse": 9.173,
+        "r2": 0.9641,
+        "mean": 86.279,
+        "nrmse": 0.1063,
+        "n": 3456
+      }
+    },
+    "pm10": {
+      "mae": 11.549,
+      "rmse": 20.457,
+      "r2": 0.9914,
+      "mean": 229.466,
+      "nrmse": 0.0891,
+      "n": 3456
+    },
+    "no2": {
+      "mae": 3.869,
+      "rmse": 5.593,
+      "r2": 0.9526,
+      "mean": 33.374,
+      "nrmse": 0.1676,
+      "n": 3456
+    },
+    "o3": {
+      "mae": 10.977,
+      "rmse": 14.931,
+      "r2": 0.9322,
+      "mean": 91.604,
+      "nrmse": 0.163,
+      "n": 3456
+    },
+    "so2": {
+      "mae": 3.696,
+      "rmse": 5.152,
+      "r2": 0.9064,
+      "mean": 29.524,
+      "nrmse": 0.1745,
+      "n": 3456
+    },
+    "co": {
+      "mae": 154.64,
+      "rmse": 245.45,
+      "r2": 0.8178,
+      "mean": 851.521,
+      "nrmse": 0.2882,
+      "n": 3456
+    }
+  },
+  "aqi": {
+    "overall": {
+      "n": 3456,
+      "aqi_cpcb_mae": 15.14,
+      "aqi_cpcb_rmse": 23.43,
+      "aqi_cpcb_r2": 0.9643
+    },
+    "winter": {
+      "n": 1152,
+      "aqi_cpcb_mae": 11.75,
+      "aqi_cpcb_rmse": 18.22,
+      "aqi_cpcb_r2": 0.9624
+    }
+  },
+  "ablation": {
+    "pm2_5_no_future_covariates": {
+      "mae": 23.703,
+      "rmse": 36.158,
+      "r2": 0.6237,
+      "mean": 91.936,
+      "nrmse": 0.3933,
+      "n": 1152
+    }
+  },
+  "species_gates": {
+    "pm2_5": {
+      "evaluated": true,
+      "rmse_lt_15": true,
+      "nrmse_le_0p12": true,
+      "r2_gt_087": true,
+      "pass": true
+    },
+    "pm10": {
+      "evaluated": true,
+      "rmse_lt_15": false,
+      "nrmse_le_0p12": true,
+      "r2_gt_087": true,
+      "pass": true
+    },
+    "no2": {
+      "evaluated": true,
+      "rmse_lt_15": true,
+      "nrmse_le_0p12": false,
+      "r2_gt_087": true,
+      "pass": true
+    },
+    "o3": {
+      "evaluated": true,
+      "rmse_lt_15": true,
+      "nrmse_le_0p12": false,
+      "r2_gt_087": true,
+      "pass": true
+    },
+    "so2": {
+      "evaluated": true,
+      "rmse_lt_15": true,
+      "nrmse_le_0p12": false,
+      "r2_gt_087": true,
+      "pass": true
+    },
+    "co": {
+      "evaluated": true,
+      "rmse_lt_15": false,
+      "nrmse_le_0p12": false,
+      "r2_gt_087": false,
+      "pass": false
+    }
+  },
+  "gates_verdict": "FAIL"
+}

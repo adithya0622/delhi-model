@@ -340,14 +340,22 @@ def eval_species(
     base_zero_shot: bool = False,
     batch_size: int = 256,
     log_target: bool = False,
-) -> dict[int, np.ndarray]:
-    """{origin: 72-h p50 forecast} for the species, batched in ONE predict_df call."""
+    pipeline=None,
+):
+    """{origin: 72-h p50 forecast} for the species, batched in ONE predict_df call.
+
+    ``pipeline`` optionally supplies a pre-loaded Chronos2Pipeline to reuse
+    across many species/evaluation passes (saves a full model load per call);
+    when omitted the checkpoint (or the zero-shot base) is loaded as before.
+    """
     import pandas as pd
     import torch
 
     from chronos.chronos2 import Chronos2Pipeline
 
-    if base_zero_shot:
+    if pipeline is not None:
+        pipe = pipeline
+    elif base_zero_shot:
         pipe = Chronos2Pipeline.from_pretrained("amazon/chronos-2")
     else:
         pipe = Chronos2Pipeline.from_pretrained(str(ckpt_dir))
@@ -521,6 +529,10 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--out-dir", type=str, default=str(_ROOT / "backend" / "app" / "artifacts" / "chronos2_delhi"))
     parser.add_argument("--threads", type=int, default=8)
+    parser.add_argument(
+        "--seed", type=int, default=42,
+        help="torch/training seed; vary it to retrain the same config from a different draw",
+    )
     parser.add_argument("--skip-train", action="store_true", help="evaluate existing checkpoints only")
     parser.add_argument(
         "--retrain", action="store_true",
@@ -646,6 +658,7 @@ def main() -> None:
                 batch_size=args.batch_size,
                 context_hours=args.context_hours,
                 log_target=s in log_species,
+                seed=args.seed,
             )
         else:
             print(f"[{s}] checkpoint exists or training skipped - evaluating", flush=True)

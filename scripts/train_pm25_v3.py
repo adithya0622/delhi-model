@@ -155,12 +155,17 @@ def _extra_features(target_time: datetime, weather: dict[str, Any]) -> list[floa
 
 # ── Data loading (same as v2) ─────────────────────────────────────────────────
 
-async def _fetch_archive(client: httpx.AsyncClient, url: str, vars_str: str, start: date, end: date) -> dict[str, list]:
+async def _fetch_archive(
+    client: httpx.AsyncClient, url: str, vars_str: str, start: date, end: date,
+    *, lat: float | None = None, lon: float | None = None,
+) -> dict[str, list]:
+    """Fetch one archive chunk. Defaults to the Delhi city training point;
+    explicit lat/lon fetch a different grid cell (see scripts/cell_archives.py)."""
     payload = await client.get(
         url,
         params={
-            "latitude": _LAT,
-            "longitude": _LON,
+            "latitude": _LAT if lat is None else lat,
+            "longitude": _LON if lon is None else lon,
             "hourly": vars_str,
             "start_date": start.isoformat(),
             "end_date": end.isoformat(),

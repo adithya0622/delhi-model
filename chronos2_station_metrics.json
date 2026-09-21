@@ -1,0 +1,4725 @@
+{
+  "generated_at": "2026-09-17T20:36:31.313469",
+  "model": "Chronos-2 LoRA fine-tuned specialists (six, covariate-aware)",
+  "protocol": {
+    "eval_origins": 48,
+    "eval_stride_hours": 96,
+    "context_hours": 720,
+    "horizon": 72,
+    "holdout": "trailing 12 months (from 2025-09-12)",
+    "truth": "CAMS reanalysis at the Delhi city cell (the training target series)",
+    "station_layer": "production station_forecast_service offsets (measured / IQAir live / catalog prior)"
+  },
+  "city_cell_reference": {
+    "species": {
+      "pm2_5": {
+        "n": 3456,
+        "mae": 6.317,
+        "mse": 82.246,
+        "rmse": 9.069,
+        "r2": 0.9649,
+        "bias_mbe": -0.417
+      },
+      "pm10": {
+        "n": 3456,
+        "mae": 11.549,
+        "mse": 418.469,
+        "rmse": 20.457,
+        "r2": 0.9914,
+        "bias_mbe": -2.115
+      },
+      "no2": {
+        "n": 3456,
+        "mae": 3.869,
+        "mse": 31.278,
+        "rmse": 5.593,
+        "r2": 0.9526,
+        "bias_mbe": -0.459
+      },
+      "o3": {
+        "n": 3456,
+        "mae": 10.977,
+        "mse": 222.947,
+        "rmse": 14.931,
+        "r2": 0.9322,
+        "bias_mbe": -1.608
+      },
+      "so2": {
+        "n": 3456,
+        "mae": 3.696,
+        "mse": 26.543,
+        "rmse": 5.152,
+        "r2": 0.9064,
+        "bias_mbe": -0.281
+      },
+      "co": {
+        "n": 3456,
+        "mae": 159.279,
+        "mse": 62233.107,
+        "rmse": 249.466,
+        "r2": 0.8118,
+        "bias_mbe": 3.4
+      }
+    },
+    "aqi": {
+      "n": 3456,
+      "mae": 15.142,
+      "mse": 548.834,
+      "rmse": 23.427,
+      "r2": 0.9643,
+      "bias_mbe": -3.253
+    }
+  },
+  "pooled_all_stations": {
+    "pm2_5": {
+      "n": 172800,
+      "mae": 12.215,
+      "mse": 309.099,
+      "rmse": 17.581,
+      "r2": 0.8681,
+      "bias_mbe": 0.976
+    },
+    "pm10": {
+      "n": 172800,
+      "mae": 24.676,
+      "mse": 1662.933,
+      "rmse": 40.779,
+      "r2": 0.966,
+      "bias_mbe": 10.89
+    },
+    "no2": {
+      "n": 172800,
+      "mae": 4.929,
+      "mse": 50.725,
+      "rmse": 7.122,
+      "r2": 0.923,
+      "bias_mbe": 1.424
+    },
+    "o3": {
+      "n": 172800,
+      "mae": 13.898,
+      "mse": 352.343,
+      "rmse": 18.771,
+      "r2": 0.8928,
+      "bias_mbe": 3.539
+    },
+    "so2": {
+      "n": 172800,
+      "mae": 4.597,
+      "mse": 38.459,
+      "rmse": 6.202,
+      "r2": 0.8644,
+      "bias_mbe": 1.392
+    },
+    "co": {
+      "n": 172800,
+      "mae": 184.896,
+      "mse": 75734.249,
+      "rmse": 275.199,
+      "r2": 0.771,
+      "bias_mbe": 52.302
+    }
+  },
+  "stations": [
+    {
+      "station": "Najafgarh",
+      "uid": "delhi-najafgarh",
+      "zone": "South West Delhi",
+      "lat": 28.5702,
+      "lon": 76.9338,
+      "ratios": {
+        "pm2_5": 1.01,
+        "pm10": 1.01,
+        "no2": 1.01,
+        "o3": 1.01,
+        "so2": 1.01,
+        "co": 1.01
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.01,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.343,
+            "mse": 82.093,
+            "rmse": 9.06,
+            "r2": 0.965,
+            "bias_mbe": 0.442
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 11.539,
+            "mse": 414.457,
+            "rmse": 20.358,
+            "r2": 0.9915,
+            "bias_mbe": 0.159
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.856,
+            "mse": 30.925,
+            "rmse": 5.561,
+            "r2": 0.9531,
+            "bias_mbe": -0.13
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 10.972,
+            "mse": 220.842,
+            "rmse": 14.861,
+            "r2": 0.9328,
+            "bias_mbe": -0.708
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.695,
+            "mse": 26.216,
+            "rmse": 5.12,
+            "r2": 0.9076,
+            "bias_mbe": 0.012
+          },
+          "co": {
+            "n": 3456,
+            "mae": 160.715,
+            "mse": 62376.93,
+            "rmse": 249.754,
+            "r2": 0.8114,
+            "bias_mbe": 11.949
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 15.022,
+          "mse": 539.01,
+          "rmse": 23.217,
+          "r2": 0.9649,
+          "bias_mbe": -0.999
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 11.918,
+        "mse": 345.048,
+        "rmse": 18.575,
+        "r2": 0.961,
+        "bias_mbe": 3.124
+      }
+    },
+    {
+      "station": "Noida Sector 125",
+      "uid": "noida-sec-125",
+      "zone": "Noida",
+      "lat": 28.5448,
+      "lon": 77.3231,
+      "ratios": {
+        "pm2_5": 1.0,
+        "pm10": 1.0,
+        "no2": 1.0,
+        "o3": 1.0,
+        "so2": 1.0,
+        "co": 1.0
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.0,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.317,
+            "mse": 82.246,
+            "rmse": 9.069,
+            "r2": 0.9649,
+            "bias_mbe": -0.417
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 11.549,
+            "mse": 418.469,
+            "rmse": 20.457,
+            "r2": 0.9914,
+            "bias_mbe": -2.115
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.869,
+            "mse": 31.278,
+            "rmse": 5.593,
+            "r2": 0.9526,
+            "bias_mbe": -0.459
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 10.977,
+            "mse": 222.947,
+            "rmse": 14.931,
+            "r2": 0.9322,
+            "bias_mbe": -1.608
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.696,
+            "mse": 26.543,
+            "rmse": 5.152,
+            "r2": 0.9064,
+            "bias_mbe": -0.281
+          },
+          "co": {
+            "n": 3456,
+            "mae": 159.279,
+            "mse": 62233.107,
+            "rmse": 249.466,
+            "r2": 0.8118,
+            "bias_mbe": 3.4
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 15.142,
+          "mse": 548.834,
+          "rmse": 23.427,
+          "r2": 0.9643,
+          "bias_mbe": -3.253
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 11.748,
+        "mse": 332.038,
+        "rmse": 18.222,
+        "r2": 0.9624,
+        "bias_mbe": 0.823
+      }
+    },
+    {
+      "station": "Noida Sector 116",
+      "uid": "noida-sec-116",
+      "zone": "Noida",
+      "lat": 28.5692,
+      "lon": 77.3938,
+      "ratios": {
+        "pm2_5": 1.02,
+        "pm10": 1.02,
+        "no2": 1.02,
+        "o3": 1.02,
+        "so2": 1.02,
+        "co": 1.02
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.02,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.479,
+            "mse": 83.858,
+            "rmse": 9.157,
+            "r2": 0.9642,
+            "bias_mbe": 1.3
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 11.899,
+            "mse": 430.397,
+            "rmse": 20.746,
+            "r2": 0.9912,
+            "bias_mbe": 2.432
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.863,
+            "mse": 30.91,
+            "rmse": 5.56,
+            "r2": 0.9531,
+            "bias_mbe": 0.199
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.017,
+            "mse": 220.964,
+            "rmse": 14.865,
+            "r2": 0.9328,
+            "bias_mbe": 0.192
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.709,
+            "mse": 26.106,
+            "rmse": 5.109,
+            "r2": 0.9079,
+            "bias_mbe": 0.304
+          },
+          "co": {
+            "n": 3456,
+            "mae": 162.408,
+            "mse": 62720.351,
+            "rmse": 250.44,
+            "r2": 0.8104,
+            "bias_mbe": 20.499
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 15.15,
+          "mse": 540.768,
+          "rmse": 23.254,
+          "r2": 0.9648,
+          "bias_mbe": 1.217
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 12.442,
+        "mse": 369.619,
+        "rmse": 19.225,
+        "r2": 0.9582,
+        "bias_mbe": 5.39
+      }
+    },
+    {
+      "station": "North Campus (DU)",
+      "uid": "delhi-north-campus",
+      "zone": "North Delhi",
+      "lat": 28.6896,
+      "lon": 77.2139,
+      "ratios": {
+        "pm2_5": 1.02,
+        "pm10": 1.02,
+        "no2": 1.02,
+        "o3": 1.02,
+        "so2": 1.02,
+        "co": 1.02
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.02,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.479,
+            "mse": 83.858,
+            "rmse": 9.157,
+            "r2": 0.9642,
+            "bias_mbe": 1.3
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 11.899,
+            "mse": 430.397,
+            "rmse": 20.746,
+            "r2": 0.9912,
+            "bias_mbe": 2.432
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.863,
+            "mse": 30.91,
+            "rmse": 5.56,
+            "r2": 0.9531,
+            "bias_mbe": 0.199
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.017,
+            "mse": 220.964,
+            "rmse": 14.865,
+            "r2": 0.9328,
+            "bias_mbe": 0.192
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.709,
+            "mse": 26.106,
+            "rmse": 5.109,
+            "r2": 0.9079,
+            "bias_mbe": 0.304
+          },
+          "co": {
+            "n": 3456,
+            "mae": 162.408,
+            "mse": 62720.351,
+            "rmse": 250.44,
+            "r2": 0.8104,
+            "bias_mbe": 20.499
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 15.15,
+          "mse": 540.768,
+          "rmse": 23.254,
+          "r2": 0.9648,
+          "bias_mbe": 1.217
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 12.442,
+        "mse": 369.619,
+        "rmse": 19.225,
+        "r2": 0.9582,
+        "bias_mbe": 5.39
+      }
+    },
+    {
+      "station": "Gurugram (Vikas Sadan)",
+      "uid": "gurugram-vikas-sadan",
+      "zone": "Gurugram",
+      "lat": 28.4552,
+      "lon": 77.0299,
+      "ratios": {
+        "pm2_5": 1.03,
+        "pm10": 1.03,
+        "no2": 1.03,
+        "o3": 1.03,
+        "so2": 1.03,
+        "co": 1.03
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.03,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.712,
+            "mse": 87.541,
+            "rmse": 9.356,
+            "r2": 0.9626,
+            "bias_mbe": 2.159
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 12.554,
+            "mse": 466.291,
+            "rmse": 21.594,
+            "r2": 0.9905,
+            "bias_mbe": 4.706
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.894,
+            "mse": 31.233,
+            "rmse": 5.589,
+            "r2": 0.9526,
+            "bias_mbe": 0.528
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.12,
+            "mse": 223.313,
+            "rmse": 14.944,
+            "r2": 0.9321,
+            "bias_mbe": 1.092
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.738,
+            "mse": 26.213,
+            "rmse": 5.12,
+            "r2": 0.9076,
+            "bias_mbe": 0.597
+          },
+          "co": {
+            "n": 3456,
+            "mae": 164.401,
+            "mse": 63263.37,
+            "rmse": 251.522,
+            "r2": 0.8087,
+            "bias_mbe": 29.048
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 15.52,
+          "mse": 555.019,
+          "rmse": 23.559,
+          "r2": 0.9639,
+          "bias_mbe": 3.436
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 13.277,
+        "mse": 405.687,
+        "rmse": 20.142,
+        "r2": 0.9541,
+        "bias_mbe": 7.673
+      }
+    },
+    {
+      "station": "Nehru Nagar",
+      "uid": "delhi-nehru-nagar",
+      "zone": "South Delhi",
+      "lat": 28.5679,
+      "lon": 77.2505,
+      "ratios": {
+        "pm2_5": 1.03,
+        "pm10": 1.03,
+        "no2": 1.03,
+        "o3": 1.03,
+        "so2": 1.03,
+        "co": 1.03
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.03,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.712,
+            "mse": 87.541,
+            "rmse": 9.356,
+            "r2": 0.9626,
+            "bias_mbe": 2.159
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 12.554,
+            "mse": 466.291,
+            "rmse": 21.594,
+            "r2": 0.9905,
+            "bias_mbe": 4.706
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.894,
+            "mse": 31.233,
+            "rmse": 5.589,
+            "r2": 0.9526,
+            "bias_mbe": 0.528
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.12,
+            "mse": 223.313,
+            "rmse": 14.944,
+            "r2": 0.9321,
+            "bias_mbe": 1.092
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.738,
+            "mse": 26.213,
+            "rmse": 5.12,
+            "r2": 0.9076,
+            "bias_mbe": 0.597
+          },
+          "co": {
+            "n": 3456,
+            "mae": 164.401,
+            "mse": 63263.37,
+            "rmse": 251.522,
+            "r2": 0.8087,
+            "bias_mbe": 29.048
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 15.52,
+          "mse": 555.019,
+          "rmse": 23.559,
+          "r2": 0.9639,
+          "bias_mbe": 3.436
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 13.277,
+        "mse": 405.687,
+        "rmse": 20.142,
+        "r2": 0.9541,
+        "bias_mbe": 7.673
+      }
+    },
+    {
+      "station": "Noida Sector 1",
+      "uid": "noida-sec-1",
+      "zone": "Noida",
+      "lat": 28.5898,
+      "lon": 77.3101,
+      "ratios": {
+        "pm2_5": 1.04,
+        "pm10": 1.04,
+        "no2": 1.04,
+        "o3": 1.04,
+        "so2": 1.04,
+        "co": 1.04
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.04,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.036,
+            "mse": 93.144,
+            "rmse": 9.651,
+            "r2": 0.9602,
+            "bias_mbe": 3.017
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 13.536,
+            "mse": 522.137,
+            "rmse": 22.85,
+            "r2": 0.9893,
+            "bias_mbe": 6.979
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.947,
+            "mse": 31.895,
+            "rmse": 5.648,
+            "r2": 0.9516,
+            "bias_mbe": 0.857
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.271,
+            "mse": 227.888,
+            "rmse": 15.096,
+            "r2": 0.9307,
+            "bias_mbe": 1.992
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.785,
+            "mse": 26.538,
+            "rmse": 5.151,
+            "r2": 0.9064,
+            "bias_mbe": 0.889
+          },
+          "co": {
+            "n": 3456,
+            "mae": 166.711,
+            "mse": 64005.987,
+            "rmse": 252.994,
+            "r2": 0.8065,
+            "bias_mbe": 37.597
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 16.136,
+          "mse": 581.008,
+          "rmse": 24.104,
+          "r2": 0.9622,
+          "bias_mbe": 5.618
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 14.405,
+        "mse": 453.378,
+        "rmse": 21.293,
+        "r2": 0.9487,
+        "bias_mbe": 9.922
+      }
+    },
+    {
+      "station": "Sonia Vihar",
+      "uid": "delhi-sonia-vihar",
+      "zone": "North East Delhi",
+      "lat": 28.7105,
+      "lon": 77.2494,
+      "ratios": {
+        "pm2_5": 1.04,
+        "pm10": 1.04,
+        "no2": 1.04,
+        "o3": 1.04,
+        "so2": 1.04,
+        "co": 1.04
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.04,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.036,
+            "mse": 93.144,
+            "rmse": 9.651,
+            "r2": 0.9602,
+            "bias_mbe": 3.017
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 13.536,
+            "mse": 522.137,
+            "rmse": 22.85,
+            "r2": 0.9893,
+            "bias_mbe": 6.979
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.947,
+            "mse": 31.895,
+            "rmse": 5.648,
+            "r2": 0.9516,
+            "bias_mbe": 0.857
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.271,
+            "mse": 227.888,
+            "rmse": 15.096,
+            "r2": 0.9307,
+            "bias_mbe": 1.992
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.785,
+            "mse": 26.538,
+            "rmse": 5.151,
+            "r2": 0.9064,
+            "bias_mbe": 0.889
+          },
+          "co": {
+            "n": 3456,
+            "mae": 166.711,
+            "mse": 64005.987,
+            "rmse": 252.994,
+            "r2": 0.8065,
+            "bias_mbe": 37.597
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 16.136,
+          "mse": 581.008,
+          "rmse": 24.104,
+          "r2": 0.9622,
+          "bias_mbe": 5.618
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 14.405,
+        "mse": 453.378,
+        "rmse": 21.293,
+        "r2": 0.9487,
+        "bias_mbe": 9.922
+      }
+    },
+    {
+      "station": "Dwarka Sector 8",
+      "uid": "delhi-dwarka-sec-8",
+      "zone": "South West Delhi",
+      "lat": 28.571,
+      "lon": 77.0667,
+      "ratios": {
+        "pm2_5": 0.98,
+        "pm10": 0.98,
+        "no2": 0.98,
+        "o3": 0.98,
+        "so2": 0.98,
+        "co": 0.98
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.98,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.596,
+            "mse": 88.31,
+            "rmse": 9.397,
+            "r2": 0.9623,
+            "bias_mbe": -2.134
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 12.647,
+            "mse": 486.353,
+            "rmse": 22.053,
+            "r2": 0.9901,
+            "bias_mbe": -6.662
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 3.944,
+            "mse": 32.997,
+            "rmse": 5.744,
+            "r2": 0.9499,
+            "bias_mbe": -1.117
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.132,
+            "mse": 233.837,
+            "rmse": 15.292,
+            "r2": 0.9289,
+            "bias_mbe": -3.408
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.748,
+            "mse": 27.847,
+            "rmse": 5.277,
+            "r2": 0.9018,
+            "bias_mbe": -0.865
+          },
+          "co": {
+            "n": 3456,
+            "mae": 157.338,
+            "mse": 62544.257,
+            "rmse": 250.088,
+            "r2": 0.8109,
+            "bias_mbe": -13.698
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 16.216,
+          "mse": 608.477,
+          "rmse": 24.667,
+          "r2": 0.9604,
+          "bias_mbe": -7.774
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 12.566,
+        "mse": 342.503,
+        "rmse": 18.507,
+        "r2": 0.9612,
+        "bias_mbe": -3.832
+      }
+    },
+    {
+      "station": "Gurugram (Sector 51)",
+      "uid": "gurugram-sec-51",
+      "zone": "Gurugram",
+      "lat": 28.4232,
+      "lon": 77.0817,
+      "ratios": {
+        "pm2_5": 1.05,
+        "pm10": 1.05,
+        "no2": 1.05,
+        "o3": 1.05,
+        "so2": 1.05,
+        "co": 1.05
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.05,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.431,
+            "mse": 100.665,
+            "rmse": 10.033,
+            "r2": 0.957,
+            "bias_mbe": 3.876
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 14.804,
+            "mse": 597.937,
+            "rmse": 24.453,
+            "r2": 0.9878,
+            "bias_mbe": 9.253
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.022,
+            "mse": 32.894,
+            "rmse": 5.735,
+            "r2": 0.9501,
+            "bias_mbe": 1.187
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.467,
+            "mse": 234.689,
+            "rmse": 15.32,
+            "r2": 0.9286,
+            "bias_mbe": 2.892
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.845,
+            "mse": 27.079,
+            "rmse": 5.204,
+            "r2": 0.9045,
+            "bias_mbe": 1.182
+          },
+          "co": {
+            "n": 3456,
+            "mae": 169.317,
+            "mse": 64948.202,
+            "rmse": 254.849,
+            "r2": 0.8036,
+            "bias_mbe": 46.146
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 16.966,
+          "mse": 619.704,
+          "rmse": 24.894,
+          "r2": 0.9597,
+          "bias_mbe": 7.8
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 15.802,
+        "mse": 513.316,
+        "rmse": 22.656,
+        "r2": 0.9419,
+        "bias_mbe": 12.17
+      }
+    },
+    {
+      "station": "Faridabad (Sector 16A)",
+      "uid": "faridabad-sec-16a",
+      "zone": "Faridabad",
+      "lat": 28.4089,
+      "lon": 77.3178,
+      "ratios": {
+        "pm2_5": 1.06,
+        "pm10": 1.06,
+        "no2": 1.06,
+        "o3": 1.06,
+        "so2": 1.06,
+        "co": 1.06
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.06,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.885,
+            "mse": 110.105,
+            "rmse": 10.493,
+            "r2": 0.953,
+            "bias_mbe": 4.735
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 16.283,
+            "mse": 693.69,
+            "rmse": 26.338,
+            "r2": 0.9858,
+            "bias_mbe": 11.527
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.115,
+            "mse": 34.231,
+            "rmse": 5.851,
+            "r2": 0.9481,
+            "bias_mbe": 1.516
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.712,
+            "mse": 243.718,
+            "rmse": 15.611,
+            "r2": 0.9258,
+            "bias_mbe": 3.791
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.92,
+            "mse": 27.837,
+            "rmse": 5.276,
+            "r2": 0.9018,
+            "bias_mbe": 1.474
+          },
+          "co": {
+            "n": 3456,
+            "mae": 172.165,
+            "mse": 66090.016,
+            "rmse": 257.08,
+            "r2": 0.8002,
+            "bias_mbe": 54.695
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 17.98,
+          "mse": 669.244,
+          "rmse": 25.87,
+          "r2": 0.9564,
+          "bias_mbe": 9.976
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 17.392,
+        "mse": 583.158,
+        "rmse": 24.149,
+        "r2": 0.934,
+        "bias_mbe": 14.448
+      }
+    },
+    {
+      "station": "Patparganj",
+      "uid": "delhi-patparganj",
+      "zone": "East Delhi",
+      "lat": 28.6237,
+      "lon": 77.2872,
+      "ratios": {
+        "pm2_5": 1.06,
+        "pm10": 1.06,
+        "no2": 1.06,
+        "o3": 1.06,
+        "so2": 1.06,
+        "co": 1.06
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.06,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.885,
+            "mse": 110.105,
+            "rmse": 10.493,
+            "r2": 0.953,
+            "bias_mbe": 4.735
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 16.283,
+            "mse": 693.69,
+            "rmse": 26.338,
+            "r2": 0.9858,
+            "bias_mbe": 11.527
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.115,
+            "mse": 34.231,
+            "rmse": 5.851,
+            "r2": 0.9481,
+            "bias_mbe": 1.516
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.712,
+            "mse": 243.718,
+            "rmse": 15.611,
+            "r2": 0.9258,
+            "bias_mbe": 3.791
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.92,
+            "mse": 27.837,
+            "rmse": 5.276,
+            "r2": 0.9018,
+            "bias_mbe": 1.474
+          },
+          "co": {
+            "n": 3456,
+            "mae": 172.165,
+            "mse": 66090.016,
+            "rmse": 257.08,
+            "r2": 0.8002,
+            "bias_mbe": 54.695
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 17.98,
+          "mse": 669.244,
+          "rmse": 25.87,
+          "r2": 0.9564,
+          "bias_mbe": 9.976
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 17.392,
+        "mse": 583.158,
+        "rmse": 24.149,
+        "r2": 0.934,
+        "bias_mbe": 14.448
+      }
+    },
+    {
+      "station": "Mandir Marg",
+      "uid": "delhi-mandir-marg",
+      "zone": "Central Delhi",
+      "lat": 28.6365,
+      "lon": 77.201,
+      "ratios": {
+        "pm2_5": 0.96,
+        "pm10": 0.96,
+        "no2": 0.96,
+        "o3": 0.96,
+        "so2": 0.96,
+        "co": 0.96
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.96,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.212,
+            "mse": 102.048,
+            "rmse": 10.102,
+            "r2": 0.9564,
+            "bias_mbe": -3.852
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 15.043,
+            "mse": 634.048,
+            "rmse": 25.18,
+            "r2": 0.987,
+            "bias_mbe": -11.209
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.088,
+            "mse": 36.067,
+            "rmse": 6.006,
+            "r2": 0.9453,
+            "bias_mbe": -1.776
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.517,
+            "mse": 253.633,
+            "rmse": 15.926,
+            "r2": 0.9228,
+            "bias_mbe": -5.208
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.856,
+            "mse": 30.02,
+            "rmse": 5.479,
+            "r2": 0.8941,
+            "bias_mbe": -1.45
+          },
+          "co": {
+            "n": 3456,
+            "mae": 156.815,
+            "mse": 63653.799,
+            "rmse": 252.297,
+            "r2": 0.8075,
+            "bias_mbe": -30.797
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 18.264,
+          "mse": 719.438,
+          "rmse": 26.822,
+          "r2": 0.9532,
+          "bias_mbe": -12.323
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 14.617,
+        "mse": 403.15,
+        "rmse": 20.079,
+        "r2": 0.9544,
+        "bias_mbe": -8.508
+      }
+    },
+    {
+      "station": "CRRI Mathura Road",
+      "uid": "delhi-crri-mathura-road",
+      "zone": "South East Delhi",
+      "lat": 28.5512,
+      "lon": 77.2736,
+      "ratios": {
+        "pm2_5": 1.07,
+        "pm10": 1.07,
+        "no2": 1.07,
+        "o3": 1.07,
+        "so2": 1.07,
+        "co": 1.07
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.07,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.385,
+            "mse": 121.463,
+            "rmse": 11.021,
+            "r2": 0.9482,
+            "bias_mbe": 5.593
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 17.889,
+            "mse": 809.395,
+            "rmse": 28.45,
+            "r2": 0.9835,
+            "bias_mbe": 13.8
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.225,
+            "mse": 35.905,
+            "rmse": 5.992,
+            "r2": 0.9455,
+            "bias_mbe": 1.845
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.008,
+            "mse": 254.973,
+            "rmse": 15.968,
+            "r2": 0.9224,
+            "bias_mbe": 4.691
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.012,
+            "mse": 28.813,
+            "rmse": 5.368,
+            "r2": 0.8984,
+            "bias_mbe": 1.766
+          },
+          "co": {
+            "n": 3456,
+            "mae": 175.279,
+            "mse": 67431.427,
+            "rmse": 259.676,
+            "r2": 0.7961,
+            "bias_mbe": 63.245
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 19.102,
+          "mse": 729.379,
+          "rmse": 27.007,
+          "r2": 0.9525,
+          "bias_mbe": 12.127
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 19.089,
+        "mse": 664.324,
+        "rmse": 25.774,
+        "r2": 0.9248,
+        "bias_mbe": 16.681
+      }
+    },
+    {
+      "station": "Noida Sector 62",
+      "uid": "noida-sec-62",
+      "zone": "Noida",
+      "lat": 28.6245,
+      "lon": 77.3649,
+      "ratios": {
+        "pm2_5": 1.07,
+        "pm10": 1.07,
+        "no2": 1.07,
+        "o3": 1.07,
+        "so2": 1.07,
+        "co": 1.07
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.07,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.385,
+            "mse": 121.463,
+            "rmse": 11.021,
+            "r2": 0.9482,
+            "bias_mbe": 5.593
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 17.889,
+            "mse": 809.395,
+            "rmse": 28.45,
+            "r2": 0.9835,
+            "bias_mbe": 13.8
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.225,
+            "mse": 35.905,
+            "rmse": 5.992,
+            "r2": 0.9455,
+            "bias_mbe": 1.845
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.008,
+            "mse": 254.973,
+            "rmse": 15.968,
+            "r2": 0.9224,
+            "bias_mbe": 4.691
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.012,
+            "mse": 28.813,
+            "rmse": 5.368,
+            "r2": 0.8984,
+            "bias_mbe": 1.766
+          },
+          "co": {
+            "n": 3456,
+            "mae": 175.279,
+            "mse": 67431.427,
+            "rmse": 259.676,
+            "r2": 0.7961,
+            "bias_mbe": 63.245
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 19.102,
+          "mse": 729.379,
+          "rmse": 27.007,
+          "r2": 0.9525,
+          "bias_mbe": 12.127
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 19.089,
+        "mse": 664.324,
+        "rmse": 25.774,
+        "r2": 0.9248,
+        "bias_mbe": 16.681
+      }
+    },
+    {
+      "station": "Pusa",
+      "uid": "delhi-pusa",
+      "zone": "Central Delhi",
+      "lat": 28.6396,
+      "lon": 77.1462,
+      "ratios": {
+        "pm2_5": 0.95,
+        "pm10": 0.95,
+        "no2": 0.95,
+        "o3": 0.95,
+        "so2": 0.95,
+        "co": 0.95
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.95,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 7.62,
+            "mse": 111.795,
+            "rmse": 10.573,
+            "r2": 0.9523,
+            "bias_mbe": -4.71
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 16.582,
+            "mse": 737.826,
+            "rmse": 27.163,
+            "r2": 0.9849,
+            "bias_mbe": -13.482
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.19,
+            "mse": 38.109,
+            "rmse": 6.173,
+            "r2": 0.9422,
+            "bias_mbe": -2.105
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.787,
+            "mse": 266.871,
+            "rmse": 16.336,
+            "r2": 0.9188,
+            "bias_mbe": -6.108
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.933,
+            "mse": 31.432,
+            "rmse": 5.606,
+            "r2": 0.8892,
+            "bias_mbe": -1.743
+          },
+          "co": {
+            "n": 3456,
+            "mae": 157.123,
+            "mse": 64507.967,
+            "rmse": 253.984,
+            "r2": 0.805,
+            "bias_mbe": -39.346
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 19.612,
+          "mse": 795.609,
+          "rmse": 28.207,
+          "r2": 0.9482,
+          "bias_mbe": -14.631
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 16.022,
+        "mse": 453.183,
+        "rmse": 21.288,
+        "r2": 0.9487,
+        "bias_mbe": -10.865
+      }
+    },
+    {
+      "station": "Dilshad Garden",
+      "uid": "delhi-dilshad-garden",
+      "zone": "East Delhi",
+      "lat": 28.676,
+      "lon": 77.3207,
+      "ratios": {
+        "pm2_5": 1.08,
+        "pm10": 1.08,
+        "no2": 1.08,
+        "o3": 1.08,
+        "so2": 1.08,
+        "co": 1.08
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.08,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.923,
+            "mse": 134.74,
+            "rmse": 11.608,
+            "r2": 0.9425,
+            "bias_mbe": 6.452
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 19.594,
+            "mse": 945.054,
+            "rmse": 30.742,
+            "r2": 0.9807,
+            "bias_mbe": 16.074
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.355,
+            "mse": 37.918,
+            "rmse": 6.158,
+            "r2": 0.9425,
+            "bias_mbe": 2.174
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.354,
+            "mse": 268.454,
+            "rmse": 16.385,
+            "r2": 0.9183,
+            "bias_mbe": 5.591
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.12,
+            "mse": 30.005,
+            "rmse": 5.478,
+            "r2": 0.8942,
+            "bias_mbe": 2.059
+          },
+          "co": {
+            "n": 3456,
+            "mae": 178.732,
+            "mse": 68972.437,
+            "rmse": 262.626,
+            "r2": 0.7915,
+            "bias_mbe": 71.794
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 20.332,
+          "mse": 801.434,
+          "rmse": 28.31,
+          "r2": 0.9478,
+          "bias_mbe": 14.249
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 20.885,
+        "mse": 756.556,
+        "rmse": 27.506,
+        "r2": 0.9144,
+        "bias_mbe": 18.893
+      }
+    },
+    {
+      "station": "Faridabad (Sector 30)",
+      "uid": "faridabad-sec-30",
+      "zone": "Faridabad",
+      "lat": 28.4253,
+      "lon": 77.312,
+      "ratios": {
+        "pm2_5": 1.08,
+        "pm10": 1.08,
+        "no2": 1.08,
+        "o3": 1.08,
+        "so2": 1.08,
+        "co": 1.08
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.08,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.923,
+            "mse": 134.74,
+            "rmse": 11.608,
+            "r2": 0.9425,
+            "bias_mbe": 6.452
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 19.594,
+            "mse": 945.054,
+            "rmse": 30.742,
+            "r2": 0.9807,
+            "bias_mbe": 16.074
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.355,
+            "mse": 37.918,
+            "rmse": 6.158,
+            "r2": 0.9425,
+            "bias_mbe": 2.174
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.354,
+            "mse": 268.454,
+            "rmse": 16.385,
+            "r2": 0.9183,
+            "bias_mbe": 5.591
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.12,
+            "mse": 30.005,
+            "rmse": 5.478,
+            "r2": 0.8942,
+            "bias_mbe": 2.059
+          },
+          "co": {
+            "n": 3456,
+            "mae": 178.732,
+            "mse": 68972.437,
+            "rmse": 262.626,
+            "r2": 0.7915,
+            "bias_mbe": 71.794
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 20.332,
+          "mse": 801.434,
+          "rmse": 28.31,
+          "r2": 0.9478,
+          "bias_mbe": 14.249
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 20.885,
+        "mse": 756.556,
+        "rmse": 27.506,
+        "r2": 0.9144,
+        "bias_mbe": 18.893
+      }
+    },
+    {
+      "station": "Greater Noida (Knowledge Park III)",
+      "uid": "greater-noida-kp3",
+      "zone": "Greater Noida",
+      "lat": 28.4727,
+      "lon": 77.482,
+      "ratios": {
+        "pm2_5": 1.08,
+        "pm10": 1.08,
+        "no2": 1.08,
+        "o3": 1.08,
+        "so2": 1.08,
+        "co": 1.08
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.08,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.923,
+            "mse": 134.74,
+            "rmse": 11.608,
+            "r2": 0.9425,
+            "bias_mbe": 6.452
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 19.594,
+            "mse": 945.054,
+            "rmse": 30.742,
+            "r2": 0.9807,
+            "bias_mbe": 16.074
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.355,
+            "mse": 37.918,
+            "rmse": 6.158,
+            "r2": 0.9425,
+            "bias_mbe": 2.174
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.354,
+            "mse": 268.454,
+            "rmse": 16.385,
+            "r2": 0.9183,
+            "bias_mbe": 5.591
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.12,
+            "mse": 30.005,
+            "rmse": 5.478,
+            "r2": 0.8942,
+            "bias_mbe": 2.059
+          },
+          "co": {
+            "n": 3456,
+            "mae": 178.732,
+            "mse": 68972.437,
+            "rmse": 262.626,
+            "r2": 0.7915,
+            "bias_mbe": 71.794
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 20.332,
+          "mse": 801.434,
+          "rmse": 28.31,
+          "r2": 0.9478,
+          "bias_mbe": 14.249
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 20.885,
+        "mse": 756.556,
+        "rmse": 27.506,
+        "r2": 0.9144,
+        "bias_mbe": 18.893
+      }
+    },
+    {
+      "station": "Jawaharlal Nehru Stadium",
+      "uid": "delhi-jln-stadium",
+      "zone": "South Delhi",
+      "lat": 28.5802,
+      "lon": 77.2338,
+      "ratios": {
+        "pm2_5": 0.94,
+        "pm10": 0.94,
+        "no2": 0.94,
+        "o3": 0.94,
+        "so2": 0.94,
+        "co": 0.94
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.94,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.078,
+            "mse": 123.461,
+            "rmse": 11.111,
+            "r2": 0.9473,
+            "bias_mbe": -5.569
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 18.271,
+            "mse": 861.556,
+            "rmse": 29.352,
+            "r2": 0.9824,
+            "bias_mbe": -15.756
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.314,
+            "mse": 40.489,
+            "rmse": 6.363,
+            "r2": 0.9386,
+            "bias_mbe": -2.434
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.101,
+            "mse": 282.335,
+            "rmse": 16.803,
+            "r2": 0.9141,
+            "bias_mbe": -7.008
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.027,
+            "mse": 33.061,
+            "rmse": 5.75,
+            "r2": 0.8834,
+            "bias_mbe": -2.035
+          },
+          "co": {
+            "n": 3456,
+            "mae": 157.804,
+            "mse": 65561.733,
+            "rmse": 256.05,
+            "r2": 0.8018,
+            "bias_mbe": -47.895
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 21.084,
+          "mse": 884.753,
+          "rmse": 29.745,
+          "r2": 0.9424,
+          "bias_mbe": -16.937
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 17.516,
+        "mse": 515.389,
+        "rmse": 22.702,
+        "r2": 0.9417,
+        "bias_mbe": -13.234
+      }
+    },
+    {
+      "station": "DTU",
+      "uid": "delhi-dtu",
+      "zone": "North Delhi",
+      "lat": 28.7501,
+      "lon": 77.1113,
+      "ratios": {
+        "pm2_5": 1.09,
+        "pm10": 1.09,
+        "no2": 1.09,
+        "o3": 1.09,
+        "so2": 1.09,
+        "co": 1.09
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.09,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 9.5,
+            "mse": 149.936,
+            "rmse": 12.245,
+            "r2": 0.936,
+            "bias_mbe": 7.31
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 21.391,
+            "mse": 1100.665,
+            "rmse": 33.176,
+            "r2": 0.9775,
+            "bias_mbe": 18.347
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.502,
+            "mse": 40.269,
+            "rmse": 6.346,
+            "r2": 0.9389,
+            "bias_mbe": 2.503
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.757,
+            "mse": 284.162,
+            "rmse": 16.857,
+            "r2": 0.9135,
+            "bias_mbe": 6.491
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.242,
+            "mse": 31.415,
+            "rmse": 5.605,
+            "r2": 0.8892,
+            "bias_mbe": 2.351
+          },
+          "co": {
+            "n": 3456,
+            "mae": 182.462,
+            "mse": 70713.045,
+            "rmse": 265.919,
+            "r2": 0.7862,
+            "bias_mbe": 80.343
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 21.679,
+          "mse": 884.016,
+          "rmse": 29.732,
+          "r2": 0.9425,
+          "bias_mbe": 16.362
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 22.758,
+        "mse": 859.063,
+        "rmse": 29.31,
+        "r2": 0.9028,
+        "bias_mbe": 21.103
+      }
+    },
+    {
+      "station": "Faridabad (Sector 11)",
+      "uid": "faridabad-sec-11",
+      "zone": "Faridabad",
+      "lat": 28.3789,
+      "lon": 77.3245,
+      "ratios": {
+        "pm2_5": 1.09,
+        "pm10": 1.09,
+        "no2": 1.09,
+        "o3": 1.09,
+        "so2": 1.09,
+        "co": 1.09
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.09,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 9.5,
+            "mse": 149.936,
+            "rmse": 12.245,
+            "r2": 0.936,
+            "bias_mbe": 7.31
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 21.391,
+            "mse": 1100.665,
+            "rmse": 33.176,
+            "r2": 0.9775,
+            "bias_mbe": 18.347
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.502,
+            "mse": 40.269,
+            "rmse": 6.346,
+            "r2": 0.9389,
+            "bias_mbe": 2.503
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.757,
+            "mse": 284.162,
+            "rmse": 16.857,
+            "r2": 0.9135,
+            "bias_mbe": 6.491
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.242,
+            "mse": 31.415,
+            "rmse": 5.605,
+            "r2": 0.8892,
+            "bias_mbe": 2.351
+          },
+          "co": {
+            "n": 3456,
+            "mae": 182.462,
+            "mse": 70713.045,
+            "rmse": 265.919,
+            "r2": 0.7862,
+            "bias_mbe": 80.343
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 21.679,
+          "mse": 884.016,
+          "rmse": 29.732,
+          "r2": 0.9425,
+          "bias_mbe": 16.362
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 22.758,
+        "mse": 859.063,
+        "rmse": 29.31,
+        "r2": 0.9028,
+        "bias_mbe": 21.103
+      }
+    },
+    {
+      "station": "IGI Airport (T3)",
+      "uid": "delhi-igi-airport-t3",
+      "zone": "South West Delhi",
+      "lat": 28.5628,
+      "lon": 77.118,
+      "ratios": {
+        "pm2_5": 0.93,
+        "pm10": 0.93,
+        "no2": 0.93,
+        "o3": 0.93,
+        "so2": 0.93,
+        "co": 0.93
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.93,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 8.58,
+            "mse": 137.046,
+            "rmse": 11.707,
+            "r2": 0.9415,
+            "bias_mbe": -6.427
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 20.093,
+            "mse": 1005.239,
+            "rmse": 31.706,
+            "r2": 0.9795,
+            "bias_mbe": -18.029
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.454,
+            "mse": 43.207,
+            "rmse": 6.573,
+            "r2": 0.9345,
+            "bias_mbe": -2.763
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.473,
+            "mse": 300.026,
+            "rmse": 17.321,
+            "r2": 0.9087,
+            "bias_mbe": -7.908
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.135,
+            "mse": 34.907,
+            "rmse": 5.908,
+            "r2": 0.8769,
+            "bias_mbe": -2.328
+          },
+          "co": {
+            "n": 3456,
+            "mae": 158.899,
+            "mse": 66815.098,
+            "rmse": 258.486,
+            "r2": 0.798,
+            "bias_mbe": -56.444
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 22.707,
+          "mse": 988.314,
+          "rmse": 31.437,
+          "r2": 0.9357,
+          "bias_mbe": -19.256
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 19.198,
+        "mse": 592.285,
+        "rmse": 24.337,
+        "r2": 0.933,
+        "bias_mbe": -15.611
+      }
+    },
+    {
+      "station": "Ashok Vihar",
+      "uid": "delhi-ashok-vihar",
+      "zone": "North West Delhi",
+      "lat": 28.6954,
+      "lon": 77.1817,
+      "ratios": {
+        "pm2_5": 1.1,
+        "pm10": 1.1,
+        "no2": 1.1,
+        "o3": 1.1,
+        "so2": 1.1,
+        "co": 1.1
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.1,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 10.108,
+            "mse": 167.051,
+            "rmse": 12.925,
+            "r2": 0.9287,
+            "bias_mbe": 8.169
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 23.267,
+            "mse": 1276.23,
+            "rmse": 35.724,
+            "r2": 0.9739,
+            "bias_mbe": 20.621
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.662,
+            "mse": 42.957,
+            "rmse": 6.554,
+            "r2": 0.9348,
+            "bias_mbe": 2.832
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 13.198,
+            "mse": 302.097,
+            "rmse": 17.381,
+            "r2": 0.9081,
+            "bias_mbe": 7.391
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.378,
+            "mse": 33.041,
+            "rmse": 5.748,
+            "r2": 0.8835,
+            "bias_mbe": 2.644
+          },
+          "co": {
+            "n": 3456,
+            "mae": 186.386,
+            "mse": 72653.252,
+            "rmse": 269.543,
+            "r2": 0.7803,
+            "bias_mbe": 88.892
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 23.111,
+          "mse": 977.091,
+          "rmse": 31.258,
+          "r2": 0.9364,
+          "bias_mbe": 18.459
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 24.648,
+        "mse": 970.144,
+        "rmse": 31.147,
+        "r2": 0.8902,
+        "bias_mbe": 23.271
+      }
+    },
+    {
+      "station": "Major Dhyan Chand National Stadium",
+      "uid": "delhi-major-dhyan-chand",
+      "zone": "Central Delhi",
+      "lat": 28.6119,
+      "lon": 77.2377,
+      "ratios": {
+        "pm2_5": 0.92,
+        "pm10": 0.92,
+        "no2": 0.92,
+        "o3": 0.92,
+        "so2": 0.92,
+        "co": 0.92
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.92,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 9.122,
+            "mse": 152.549,
+            "rmse": 12.351,
+            "r2": 0.9349,
+            "bias_mbe": -7.286
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 22.004,
+            "mse": 1168.876,
+            "rmse": 34.189,
+            "r2": 0.9761,
+            "bias_mbe": -20.303
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.607,
+            "mse": 46.263,
+            "rmse": 6.802,
+            "r2": 0.9298,
+            "bias_mbe": -3.092
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.899,
+            "mse": 319.944,
+            "rmse": 17.887,
+            "r2": 0.9027,
+            "bias_mbe": -8.808
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.257,
+            "mse": 36.97,
+            "rmse": 6.08,
+            "r2": 0.8696,
+            "bias_mbe": -2.62
+          },
+          "co": {
+            "n": 3456,
+            "mae": 160.391,
+            "mse": 68268.061,
+            "rmse": 261.282,
+            "r2": 0.7936,
+            "bias_mbe": -64.994
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 24.427,
+          "mse": 1105.335,
+          "rmse": 33.247,
+          "r2": 0.928,
+          "bias_mbe": -21.583
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 20.991,
+        "mse": 681.663,
+        "rmse": 26.109,
+        "r2": 0.9229,
+        "bias_mbe": -18.0
+      }
+    },
+    {
+      "station": "Siri Fort",
+      "uid": "delhi-sirifort",
+      "zone": "South Delhi",
+      "lat": 28.5504,
+      "lon": 77.2159,
+      "ratios": {
+        "pm2_5": 0.92,
+        "pm10": 0.92,
+        "no2": 0.92,
+        "o3": 0.92,
+        "so2": 0.92,
+        "co": 0.92
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.92,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 9.122,
+            "mse": 152.549,
+            "rmse": 12.351,
+            "r2": 0.9349,
+            "bias_mbe": -7.286
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 22.004,
+            "mse": 1168.876,
+            "rmse": 34.189,
+            "r2": 0.9761,
+            "bias_mbe": -20.303
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.607,
+            "mse": 46.263,
+            "rmse": 6.802,
+            "r2": 0.9298,
+            "bias_mbe": -3.092
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.899,
+            "mse": 319.944,
+            "rmse": 17.887,
+            "r2": 0.9027,
+            "bias_mbe": -8.808
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.257,
+            "mse": 36.97,
+            "rmse": 6.08,
+            "r2": 0.8696,
+            "bias_mbe": -2.62
+          },
+          "co": {
+            "n": 3456,
+            "mae": 160.391,
+            "mse": 68268.061,
+            "rmse": 261.282,
+            "r2": 0.7936,
+            "bias_mbe": -64.994
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 24.427,
+          "mse": 1105.335,
+          "rmse": 33.247,
+          "r2": 0.928,
+          "bias_mbe": -21.583
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 20.991,
+        "mse": 681.663,
+        "rmse": 26.109,
+        "r2": 0.9229,
+        "bias_mbe": -18.0
+      }
+    },
+    {
+      "station": "Shadipur",
+      "uid": "delhi-shadipur",
+      "zone": "West Delhi",
+      "lat": 28.6515,
+      "lon": 77.1581,
+      "ratios": {
+        "pm2_5": 1.11,
+        "pm10": 1.11,
+        "no2": 1.11,
+        "o3": 1.11,
+        "so2": 1.11,
+        "co": 1.11
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.11,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 10.741,
+            "mse": 186.084,
+            "rmse": 13.641,
+            "r2": 0.9206,
+            "bias_mbe": 9.028
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 25.228,
+            "mse": 1471.748,
+            "rmse": 38.363,
+            "r2": 0.9699,
+            "bias_mbe": 22.894
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.838,
+            "mse": 45.984,
+            "rmse": 6.781,
+            "r2": 0.9302,
+            "bias_mbe": 3.162
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 13.672,
+            "mse": 322.259,
+            "rmse": 17.952,
+            "r2": 0.9019,
+            "bias_mbe": 8.291
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.524,
+            "mse": 34.885,
+            "rmse": 5.906,
+            "r2": 0.877,
+            "bias_mbe": 2.936
+          },
+          "co": {
+            "n": 3456,
+            "mae": 190.552,
+            "mse": 74793.056,
+            "rmse": 273.483,
+            "r2": 0.7739,
+            "bias_mbe": 97.442
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 24.601,
+          "mse": 1080.25,
+          "rmse": 32.867,
+          "r2": 0.9297,
+          "bias_mbe": 20.532
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 26.548,
+        "mse": 1090.299,
+        "rmse": 33.02,
+        "r2": 0.8766,
+        "bias_mbe": 25.438
+      }
+    },
+    {
+      "station": "Ghaziabad (Indirapuram)",
+      "uid": "ghaziabad-indirapuram",
+      "zone": "Ghaziabad",
+      "lat": 28.6465,
+      "lon": 77.3705,
+      "ratios": {
+        "pm2_5": 1.12,
+        "pm10": 1.12,
+        "no2": 1.12,
+        "o3": 1.12,
+        "so2": 1.12,
+        "co": 1.12
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.12,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 11.398,
+            "mse": 207.037,
+            "rmse": 14.389,
+            "r2": 0.9116,
+            "bias_mbe": 9.886
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 27.243,
+            "mse": 1687.218,
+            "rmse": 41.076,
+            "r2": 0.9655,
+            "bias_mbe": 25.168
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.026,
+            "mse": 49.348,
+            "rmse": 7.025,
+            "r2": 0.9251,
+            "bias_mbe": 3.491
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 14.19,
+            "mse": 344.647,
+            "rmse": 18.565,
+            "r2": 0.8951,
+            "bias_mbe": 9.191
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.683,
+            "mse": 36.945,
+            "rmse": 6.078,
+            "r2": 0.8697,
+            "bias_mbe": 3.229
+          },
+          "co": {
+            "n": 3456,
+            "mae": 194.885,
+            "mse": 77132.459,
+            "rmse": 277.727,
+            "r2": 0.7668,
+            "bias_mbe": 105.991
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 26.152,
+          "mse": 1192.832,
+          "rmse": 34.537,
+          "r2": 0.9224,
+          "bias_mbe": 22.595
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 28.504,
+        "mse": 1220.657,
+        "rmse": 34.938,
+        "r2": 0.8619,
+        "bias_mbe": 27.589
+      }
+    },
+    {
+      "station": "Rohini",
+      "uid": "delhi-rohini",
+      "zone": "North West Delhi",
+      "lat": 28.7325,
+      "lon": 77.1199,
+      "ratios": {
+        "pm2_5": 1.12,
+        "pm10": 1.12,
+        "no2": 1.12,
+        "o3": 1.12,
+        "so2": 1.12,
+        "co": 1.12
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.12,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 11.398,
+            "mse": 207.037,
+            "rmse": 14.389,
+            "r2": 0.9116,
+            "bias_mbe": 9.886
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 27.243,
+            "mse": 1687.218,
+            "rmse": 41.076,
+            "r2": 0.9655,
+            "bias_mbe": 25.168
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.026,
+            "mse": 49.348,
+            "rmse": 7.025,
+            "r2": 0.9251,
+            "bias_mbe": 3.491
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 14.19,
+            "mse": 344.647,
+            "rmse": 18.565,
+            "r2": 0.8951,
+            "bias_mbe": 9.191
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.683,
+            "mse": 36.945,
+            "rmse": 6.078,
+            "r2": 0.8697,
+            "bias_mbe": 3.229
+          },
+          "co": {
+            "n": 3456,
+            "mae": 194.885,
+            "mse": 77132.459,
+            "rmse": 277.727,
+            "r2": 0.7668,
+            "bias_mbe": 105.991
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 26.152,
+          "mse": 1192.832,
+          "rmse": 34.537,
+          "r2": 0.9224,
+          "bias_mbe": 22.595
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 28.504,
+        "mse": 1220.657,
+        "rmse": 34.938,
+        "r2": 0.8619,
+        "bias_mbe": 27.589
+      }
+    },
+    {
+      "station": "Sri Aurobindo Marg",
+      "uid": "delhi-sri-aurobindo-marg",
+      "zone": "South Delhi",
+      "lat": 28.5313,
+      "lon": 77.1901,
+      "ratios": {
+        "pm2_5": 0.91,
+        "pm10": 0.91,
+        "no2": 0.91,
+        "o3": 0.91,
+        "so2": 0.91,
+        "co": 0.91
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.91,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 9.709,
+            "mse": 169.971,
+            "rmse": 13.037,
+            "r2": 0.9275,
+            "bias_mbe": -8.145
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 23.978,
+            "mse": 1352.465,
+            "rmse": 36.776,
+            "r2": 0.9724,
+            "bias_mbe": -22.576
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.777,
+            "mse": 49.657,
+            "rmse": 7.047,
+            "r2": 0.9247,
+            "bias_mbe": -3.421
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 13.37,
+            "mse": 342.089,
+            "rmse": 18.496,
+            "r2": 0.8959,
+            "bias_mbe": -9.708
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.393,
+            "mse": 39.25,
+            "rmse": 6.265,
+            "r2": 0.8616,
+            "bias_mbe": -2.912
+          },
+          "co": {
+            "n": 3456,
+            "mae": 162.315,
+            "mse": 69920.622,
+            "rmse": 264.425,
+            "r2": 0.7886,
+            "bias_mbe": -73.543
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 26.26,
+          "mse": 1236.51,
+          "rmse": 35.164,
+          "r2": 0.9195,
+          "bias_mbe": -23.906
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 22.888,
+        "mse": 786.122,
+        "rmse": 28.038,
+        "r2": 0.911,
+        "bias_mbe": -20.385
+      }
+    },
+    {
+      "station": "Anand Vihar",
+      "uid": "delhi-anand-vihar",
+      "zone": "East Delhi",
+      "lat": 28.6476,
+      "lon": 77.3158,
+      "ratios": {
+        "pm2_5": 1.0033,
+        "pm10": 1.18,
+        "no2": 1.18,
+        "o3": 1.18,
+        "so2": 1.18,
+        "co": 1.18
+      },
+      "ratio_basis": {
+        "pm2_5": "iqair_live_single_hour",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.18,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 6.311,
+            "mse": 81.983,
+            "rmse": 9.054,
+            "r2": 0.965,
+            "bias_mbe": -0.134
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 39.908,
+            "mse": 3399.055,
+            "rmse": 58.301,
+            "r2": 0.9305,
+            "bias_mbe": 38.809
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 6.362,
+            "mse": 76.631,
+            "rmse": 8.754,
+            "r2": 0.8837,
+            "bias_mbe": 5.466
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 17.867,
+            "mse": 525.735,
+            "rmse": 22.929,
+            "r2": 0.84,
+            "bias_mbe": 14.591
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.853,
+            "mse": 53.866,
+            "rmse": 7.339,
+            "r2": 0.8101,
+            "bias_mbe": 4.983
+          },
+          "co": {
+            "n": 3456,
+            "mae": 224.563,
+            "mse": 95360.436,
+            "rmse": 308.805,
+            "r2": 0.7117,
+            "bias_mbe": 157.286
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 26.822,
+          "mse": 1463.913,
+          "rmse": 38.261,
+          "r2": 0.9047,
+          "bias_mbe": 20.672
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 20.129,
+        "mse": 1027.688,
+        "rmse": 32.058,
+        "r2": 0.8837,
+        "bias_mbe": 14.982
+      }
+    },
+    {
+      "station": "Burari Crossing",
+      "uid": "delhi-burari",
+      "zone": "North Delhi",
+      "lat": 28.7257,
+      "lon": 77.2012,
+      "ratios": {
+        "pm2_5": 1.13,
+        "pm10": 1.13,
+        "no2": 1.13,
+        "o3": 1.13,
+        "so2": 1.13,
+        "co": 1.13
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.13,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 12.08,
+            "mse": 229.907,
+            "rmse": 15.163,
+            "r2": 0.9019,
+            "bias_mbe": 10.745
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 29.292,
+            "mse": 1922.642,
+            "rmse": 43.848,
+            "r2": 0.9607,
+            "bias_mbe": 27.441
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.227,
+            "mse": 53.051,
+            "rmse": 7.284,
+            "r2": 0.9195,
+            "bias_mbe": 3.82
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 14.738,
+            "mse": 369.262,
+            "rmse": 19.216,
+            "r2": 0.8876,
+            "bias_mbe": 10.091
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.853,
+            "mse": 39.223,
+            "rmse": 6.263,
+            "r2": 0.8617,
+            "bias_mbe": 3.521
+          },
+          "co": {
+            "n": 3456,
+            "mae": 199.414,
+            "mse": 79671.459,
+            "rmse": 282.261,
+            "r2": 0.7591,
+            "bias_mbe": 114.54
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 27.738,
+          "mse": 1313.687,
+          "rmse": 36.245,
+          "r2": 0.9145,
+          "bias_mbe": 24.622
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 30.444,
+        "mse": 1357.309,
+        "rmse": 36.842,
+        "r2": 0.8464,
+        "bias_mbe": 29.691
+      }
+    },
+    {
+      "station": "Dr. Karni Singh Shooting Range",
+      "uid": "delhi-karni-singh",
+      "zone": "South Delhi",
+      "lat": 28.4986,
+      "lon": 77.2648,
+      "ratios": {
+        "pm2_5": 0.9,
+        "pm10": 0.9,
+        "no2": 0.9,
+        "o3": 0.9,
+        "so2": 0.9,
+        "co": 0.9
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.9,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 10.33,
+            "mse": 189.312,
+            "rmse": 13.759,
+            "r2": 0.9192,
+            "bias_mbe": -9.003
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 26.008,
+            "mse": 1556.008,
+            "rmse": 39.446,
+            "r2": 0.9682,
+            "bias_mbe": -24.85
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.961,
+            "mse": 53.389,
+            "rmse": 7.307,
+            "r2": 0.919,
+            "bias_mbe": -3.751
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 13.884,
+            "mse": 366.46,
+            "rmse": 19.143,
+            "r2": 0.8885,
+            "bias_mbe": -10.608
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.54,
+            "mse": 41.748,
+            "rmse": 6.461,
+            "r2": 0.8528,
+            "bias_mbe": -3.205
+          },
+          "co": {
+            "n": 3456,
+            "mae": 164.664,
+            "mse": 71772.781,
+            "rmse": 267.904,
+            "r2": 0.783,
+            "bias_mbe": -82.092
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 28.172,
+          "mse": 1380.904,
+          "rmse": 37.161,
+          "r2": 0.9101,
+          "bias_mbe": -26.234
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 24.891,
+        "mse": 904.571,
+        "rmse": 30.076,
+        "r2": 0.8976,
+        "bias_mbe": -22.778
+      }
+    },
+    {
+      "station": "Vivek Vihar",
+      "uid": "delhi-vivek-vihar",
+      "zone": "East Delhi",
+      "lat": 28.6723,
+      "lon": 77.3153,
+      "ratios": {
+        "pm2_5": 1.14,
+        "pm10": 1.14,
+        "no2": 1.14,
+        "o3": 1.14,
+        "so2": 1.14,
+        "co": 1.14
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.14,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 12.778,
+            "mse": 254.697,
+            "rmse": 15.959,
+            "r2": 0.8913,
+            "bias_mbe": 11.604
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 31.37,
+            "mse": 2178.019,
+            "rmse": 46.669,
+            "r2": 0.9555,
+            "bias_mbe": 29.715
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.435,
+            "mse": 57.091,
+            "rmse": 7.556,
+            "r2": 0.9134,
+            "bias_mbe": 4.149
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 15.315,
+            "mse": 396.103,
+            "rmse": 19.902,
+            "r2": 0.8795,
+            "bias_mbe": 10.991
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.036,
+            "mse": 41.717,
+            "rmse": 6.459,
+            "r2": 0.8529,
+            "bias_mbe": 3.814
+          },
+          "co": {
+            "n": 3456,
+            "mae": 204.136,
+            "mse": 82410.058,
+            "rmse": 287.072,
+            "r2": 0.7508,
+            "bias_mbe": 123.089
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 29.34,
+          "mse": 1442.9,
+          "rmse": 37.986,
+          "r2": 0.9061,
+          "bias_mbe": 26.615
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 32.401,
+        "mse": 1504.205,
+        "rmse": 38.784,
+        "r2": 0.8298,
+        "bias_mbe": 31.8
+      }
+    },
+    {
+      "station": "Gurugram (Teri Gram)",
+      "uid": "gurugram-teri-gram",
+      "zone": "Gurugram",
+      "lat": 28.4282,
+      "lon": 77.1561,
+      "ratios": {
+        "pm2_5": 0.89,
+        "pm10": 0.89,
+        "no2": 0.89,
+        "o3": 0.89,
+        "so2": 0.89,
+        "co": 0.89
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.89,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 10.985,
+            "mse": 210.571,
+            "rmse": 14.511,
+            "r2": 0.9101,
+            "bias_mbe": -9.862
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 28.09,
+            "mse": 1779.503,
+            "rmse": 42.184,
+            "r2": 0.9636,
+            "bias_mbe": -27.123
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.16,
+            "mse": 57.459,
+            "rmse": 7.58,
+            "r2": 0.9128,
+            "bias_mbe": -4.08
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 14.444,
+            "mse": 393.058,
+            "rmse": 19.826,
+            "r2": 0.8804,
+            "bias_mbe": -11.508
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.7,
+            "mse": 44.462,
+            "rmse": 6.668,
+            "r2": 0.8432,
+            "bias_mbe": -3.497
+          },
+          "co": {
+            "n": 3456,
+            "mae": 167.352,
+            "mse": 73824.538,
+            "rmse": 271.707,
+            "r2": 0.7768,
+            "bias_mbe": -90.641
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 30.149,
+          "mse": 1538.818,
+          "rmse": 39.228,
+          "r2": 0.8998,
+          "bias_mbe": -28.55
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 26.937,
+        "mse": 1035.47,
+        "rmse": 32.179,
+        "r2": 0.8828,
+        "bias_mbe": -25.161
+      }
+    },
+    {
+      "station": "Alipur",
+      "uid": "delhi-alipur",
+      "zone": "North Delhi",
+      "lat": 28.8153,
+      "lon": 77.153,
+      "ratios": {
+        "pm2_5": 1.15,
+        "pm10": 1.15,
+        "no2": 1.15,
+        "o3": 1.15,
+        "so2": 1.15,
+        "co": 1.15
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.15,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 13.493,
+            "mse": 281.405,
+            "rmse": 16.775,
+            "r2": 0.8799,
+            "bias_mbe": 12.462
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 33.475,
+            "mse": 2453.348,
+            "rmse": 49.531,
+            "r2": 0.9499,
+            "bias_mbe": 31.988
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.654,
+            "mse": 61.469,
+            "rmse": 7.84,
+            "r2": 0.9067,
+            "bias_mbe": 4.478
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 15.916,
+            "mse": 425.171,
+            "rmse": 20.62,
+            "r2": 0.8706,
+            "bias_mbe": 11.891
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.228,
+            "mse": 44.429,
+            "rmse": 6.666,
+            "r2": 0.8433,
+            "bias_mbe": 4.106
+          },
+          "co": {
+            "n": 3456,
+            "mae": 209.015,
+            "mse": 85348.255,
+            "rmse": 292.144,
+            "r2": 0.7419,
+            "bias_mbe": 131.638
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 30.97,
+          "mse": 1579.726,
+          "rmse": 39.746,
+          "r2": 0.8972,
+          "bias_mbe": 28.585
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 34.341,
+        "mse": 1659.282,
+        "rmse": 40.734,
+        "r2": 0.8122,
+        "bias_mbe": 33.874
+      }
+    },
+    {
+      "station": "Ghaziabad (Sanjay Nagar)",
+      "uid": "ghaziabad-sanjay-nagar",
+      "zone": "Ghaziabad",
+      "lat": 28.6857,
+      "lon": 77.4538,
+      "ratios": {
+        "pm2_5": 1.15,
+        "pm10": 1.15,
+        "no2": 1.15,
+        "o3": 1.15,
+        "so2": 1.15,
+        "co": 1.15
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.15,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 13.493,
+            "mse": 281.405,
+            "rmse": 16.775,
+            "r2": 0.8799,
+            "bias_mbe": 12.462
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 33.475,
+            "mse": 2453.348,
+            "rmse": 49.531,
+            "r2": 0.9499,
+            "bias_mbe": 31.988
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.654,
+            "mse": 61.469,
+            "rmse": 7.84,
+            "r2": 0.9067,
+            "bias_mbe": 4.478
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 15.916,
+            "mse": 425.171,
+            "rmse": 20.62,
+            "r2": 0.8706,
+            "bias_mbe": 11.891
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.228,
+            "mse": 44.429,
+            "rmse": 6.666,
+            "r2": 0.8433,
+            "bias_mbe": 4.106
+          },
+          "co": {
+            "n": 3456,
+            "mae": 209.015,
+            "mse": 85348.255,
+            "rmse": 292.144,
+            "r2": 0.7419,
+            "bias_mbe": 131.638
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 30.97,
+          "mse": 1579.726,
+          "rmse": 39.746,
+          "r2": 0.8972,
+          "bias_mbe": 28.585
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 34.341,
+        "mse": 1659.282,
+        "rmse": 40.734,
+        "r2": 0.8122,
+        "bias_mbe": 33.874
+      }
+    },
+    {
+      "station": "Okhla Phase 2",
+      "uid": "delhi-okhla-phase-2",
+      "zone": "South East Delhi",
+      "lat": 28.5308,
+      "lon": 77.2712,
+      "ratios": {
+        "pm2_5": 1.15,
+        "pm10": 1.15,
+        "no2": 1.15,
+        "o3": 1.15,
+        "so2": 1.15,
+        "co": 1.15
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.15,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 13.493,
+            "mse": 281.405,
+            "rmse": 16.775,
+            "r2": 0.8799,
+            "bias_mbe": 12.462
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 33.475,
+            "mse": 2453.348,
+            "rmse": 49.531,
+            "r2": 0.9499,
+            "bias_mbe": 31.988
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.654,
+            "mse": 61.469,
+            "rmse": 7.84,
+            "r2": 0.9067,
+            "bias_mbe": 4.478
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 15.916,
+            "mse": 425.171,
+            "rmse": 20.62,
+            "r2": 0.8706,
+            "bias_mbe": 11.891
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.228,
+            "mse": 44.429,
+            "rmse": 6.666,
+            "r2": 0.8433,
+            "bias_mbe": 4.106
+          },
+          "co": {
+            "n": 3456,
+            "mae": 209.015,
+            "mse": 85348.255,
+            "rmse": 292.144,
+            "r2": 0.7419,
+            "bias_mbe": 131.638
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 30.97,
+          "mse": 1579.726,
+          "rmse": 39.746,
+          "r2": 0.8972,
+          "bias_mbe": 28.585
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 34.341,
+        "mse": 1659.282,
+        "rmse": 40.734,
+        "r2": 0.8122,
+        "bias_mbe": 33.874
+      }
+    },
+    {
+      "station": "Lodhi Road",
+      "uid": "delhi-lodhi-road",
+      "zone": "Central Delhi",
+      "lat": 28.5918,
+      "lon": 77.2273,
+      "ratios": {
+        "pm2_5": 0.88,
+        "pm10": 0.88,
+        "no2": 0.88,
+        "o3": 0.88,
+        "so2": 0.88,
+        "co": 0.88
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.88,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 11.667,
+            "mse": 233.749,
+            "rmse": 15.289,
+            "r2": 0.9002,
+            "bias_mbe": -10.721
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 30.211,
+            "mse": 2022.951,
+            "rmse": 44.977,
+            "r2": 0.9587,
+            "bias_mbe": -29.397
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.369,
+            "mse": 61.866,
+            "rmse": 7.866,
+            "r2": 0.9061,
+            "bias_mbe": -4.409
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 15.048,
+            "mse": 421.882,
+            "rmse": 20.54,
+            "r2": 0.8716,
+            "bias_mbe": -12.408
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.871,
+            "mse": 47.393,
+            "rmse": 6.884,
+            "r2": 0.8329,
+            "bias_mbe": -3.79
+          },
+          "co": {
+            "n": 3456,
+            "mae": 170.394,
+            "mse": 76075.894,
+            "rmse": 275.819,
+            "r2": 0.77,
+            "bias_mbe": -99.19
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 32.216,
+          "mse": 1712.171,
+          "rmse": 41.378,
+          "r2": 0.8885,
+          "bias_mbe": -30.902
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 29.049,
+        "mse": 1181.875,
+        "rmse": 34.378,
+        "r2": 0.8662,
+        "bias_mbe": -27.575
+      }
+    },
+    {
+      "station": "Ghaziabad (Vasundhara)",
+      "uid": "ghaziabad-vasundhara",
+      "zone": "Ghaziabad",
+      "lat": 28.6603,
+      "lon": 77.3573,
+      "ratios": {
+        "pm2_5": 1.16,
+        "pm10": 1.16,
+        "no2": 1.16,
+        "o3": 1.16,
+        "so2": 1.16,
+        "co": 1.16
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.16,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 14.221,
+            "mse": 310.032,
+            "rmse": 17.608,
+            "r2": 0.8677,
+            "bias_mbe": 13.321
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 35.603,
+            "mse": 2748.631,
+            "rmse": 52.427,
+            "r2": 0.9438,
+            "bias_mbe": 34.262
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.881,
+            "mse": 66.185,
+            "rmse": 8.135,
+            "r2": 0.8996,
+            "bias_mbe": 4.807
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 16.548,
+            "mse": 456.466,
+            "rmse": 21.365,
+            "r2": 0.8611,
+            "bias_mbe": 12.791
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.43,
+            "mse": 47.358,
+            "rmse": 6.882,
+            "r2": 0.833,
+            "bias_mbe": 4.398
+          },
+          "co": {
+            "n": 3456,
+            "mae": 214.048,
+            "mse": 88486.051,
+            "rmse": 297.466,
+            "r2": 0.7325,
+            "bias_mbe": 140.188
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 32.612,
+          "mse": 1721.573,
+          "rmse": 41.492,
+          "r2": 0.8879,
+          "bias_mbe": 30.512
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 36.278,
+        "mse": 1818.523,
+        "rmse": 42.644,
+        "r2": 0.7942,
+        "bias_mbe": 35.905
+      }
+    },
+    {
+      "station": "Aya Nagar",
+      "uid": "delhi-aya-nagar",
+      "zone": "South Delhi",
+      "lat": 28.4707,
+      "lon": 77.1099,
+      "ratios": {
+        "pm2_5": 0.86,
+        "pm10": 0.86,
+        "no2": 0.86,
+        "o3": 0.86,
+        "so2": 0.86,
+        "co": 0.86
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.86,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 13.116,
+            "mse": 285.862,
+            "rmse": 16.907,
+            "r2": 0.878,
+            "bias_mbe": -12.438
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 34.525,
+            "mse": 2569.707,
+            "rmse": 50.692,
+            "r2": 0.9475,
+            "bias_mbe": -33.944
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 5.821,
+            "mse": 71.695,
+            "rmse": 8.467,
+            "r2": 0.8912,
+            "bias_mbe": -5.067
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 16.356,
+            "mse": 486.211,
+            "rmse": 22.05,
+            "r2": 0.8521,
+            "bias_mbe": -14.208
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 5.244,
+            "mse": 53.906,
+            "rmse": 7.342,
+            "r2": 0.8099,
+            "bias_mbe": -4.375
+          },
+          "co": {
+            "n": 3456,
+            "mae": 177.35,
+            "mse": 81177.399,
+            "rmse": 284.916,
+            "r2": 0.7546,
+            "bias_mbe": -116.289
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 36.504,
+          "mse": 2098.439,
+          "rmse": 45.809,
+          "r2": 0.8634,
+          "bias_mbe": -35.601
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 33.438,
+        "mse": 1518.389,
+        "rmse": 38.967,
+        "r2": 0.8282,
+        "bias_mbe": -32.439
+      }
+    },
+    {
+      "station": "Punjabi Bagh",
+      "uid": "delhi-punjabi-bagh",
+      "zone": "West Delhi",
+      "lat": 28.6683,
+      "lon": 77.1167,
+      "ratios": {
+        "pm2_5": 0.6296,
+        "pm10": 1.08,
+        "no2": 1.08,
+        "o3": 1.08,
+        "so2": 1.08,
+        "co": 1.08
+      },
+      "ratio_basis": {
+        "pm2_5": "iqair_live_single_hour",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.08,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 32.235,
+            "mse": 1439.668,
+            "rmse": 37.943,
+            "r2": 0.3855,
+            "bias_mbe": -32.22
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 19.594,
+            "mse": 945.054,
+            "rmse": 30.742,
+            "r2": 0.9807,
+            "bias_mbe": 16.074
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.355,
+            "mse": 37.918,
+            "rmse": 6.158,
+            "r2": 0.9425,
+            "bias_mbe": 2.174
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 12.354,
+            "mse": 268.454,
+            "rmse": 16.385,
+            "r2": 0.9183,
+            "bias_mbe": 5.591
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 4.12,
+            "mse": 30.005,
+            "rmse": 5.478,
+            "r2": 0.8942,
+            "bias_mbe": 2.059
+          },
+          "co": {
+            "n": 3456,
+            "mae": 178.732,
+            "mse": 68972.437,
+            "rmse": 262.626,
+            "r2": 0.7915,
+            "bias_mbe": 71.794
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 37.23,
+          "mse": 2877.789,
+          "rmse": 53.645,
+          "r2": 0.8127,
+          "bias_mbe": -16.309
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 62.661,
+        "mse": 5806.589,
+        "rmse": 76.201,
+        "r2": 0.3429,
+        "bias_mbe": -49.285
+      }
+    },
+    {
+      "station": "Wazirpur",
+      "uid": "delhi-wazirpur",
+      "zone": "North Delhi",
+      "lat": 28.6998,
+      "lon": 77.1654,
+      "ratios": {
+        "pm2_5": 1.19,
+        "pm10": 1.19,
+        "no2": 1.19,
+        "o3": 1.19,
+        "so2": 1.19,
+        "co": 1.19
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.19,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 16.482,
+            "mse": 407.425,
+            "rmse": 20.185,
+            "r2": 0.8261,
+            "bias_mbe": 15.897
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 42.089,
+            "mse": 3754.197,
+            "rmse": 61.271,
+            "r2": 0.9233,
+            "bias_mbe": 41.082
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 6.614,
+            "mse": 82.361,
+            "rmse": 9.075,
+            "r2": 0.8751,
+            "bias_mbe": 5.795
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 18.554,
+            "mse": 563.709,
+            "rmse": 23.743,
+            "r2": 0.8285,
+            "bias_mbe": 15.491
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 6.076,
+            "mse": 57.446,
+            "rmse": 7.579,
+            "r2": 0.7974,
+            "bias_mbe": 5.276
+          },
+          "co": {
+            "n": 3456,
+            "mae": 230.035,
+            "mse": 99097.026,
+            "rmse": 314.797,
+            "r2": 0.7004,
+            "bias_mbe": 165.835
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 37.573,
+          "mse": 2189.337,
+          "rmse": 46.79,
+          "r2": 0.8575,
+          "bias_mbe": 36.141
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 42.077,
+        "mse": 2348.685,
+        "rmse": 48.463,
+        "r2": 0.7342,
+        "bias_mbe": 41.94
+      }
+    },
+    {
+      "station": "ITO",
+      "uid": "delhi-ito",
+      "zone": "Central Delhi",
+      "lat": 28.6289,
+      "lon": 77.241,
+      "ratios": {
+        "pm2_5": 0.5801,
+        "pm10": 1.05,
+        "no2": 1.05,
+        "o3": 1.05,
+        "so2": 1.05,
+        "co": 1.05
+      },
+      "ratio_basis": {
+        "pm2_5": "iqair_live_single_hour",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.05,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 36.475,
+            "mse": 1820.475,
+            "rmse": 42.667,
+            "r2": 0.223,
+            "bias_mbe": -36.471
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 14.804,
+            "mse": 597.937,
+            "rmse": 24.453,
+            "r2": 0.9878,
+            "bias_mbe": 9.253
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.022,
+            "mse": 32.894,
+            "rmse": 5.735,
+            "r2": 0.9501,
+            "bias_mbe": 1.187
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.467,
+            "mse": 234.689,
+            "rmse": 15.32,
+            "r2": 0.9286,
+            "bias_mbe": 2.892
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.845,
+            "mse": 27.079,
+            "rmse": 5.204,
+            "r2": 0.9045,
+            "bias_mbe": 1.182
+          },
+          "co": {
+            "n": 3456,
+            "mae": 169.317,
+            "mse": 64948.202,
+            "rmse": 254.849,
+            "r2": 0.8036,
+            "bias_mbe": 46.146
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 38.125,
+          "mse": 3283.91,
+          "rmse": 57.305,
+          "r2": 0.7862,
+          "bias_mbe": -23.149
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 68.231,
+        "mse": 7120.094,
+        "rmse": 84.381,
+        "r2": 0.1942,
+        "bias_mbe": -58.531
+      }
+    },
+    {
+      "station": "Narela",
+      "uid": "delhi-narela",
+      "zone": "North Delhi",
+      "lat": 28.8228,
+      "lon": 77.1019,
+      "ratios": {
+        "pm2_5": 1.2,
+        "pm10": 1.2,
+        "no2": 1.2,
+        "o3": 1.2,
+        "so2": 1.2,
+        "co": 1.2
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.2,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 17.259,
+            "mse": 443.727,
+            "rmse": 21.065,
+            "r2": 0.8106,
+            "bias_mbe": 16.755
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 44.283,
+            "mse": 4129.291,
+            "rmse": 64.26,
+            "r2": 0.9156,
+            "bias_mbe": 43.356
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 6.875,
+            "mse": 88.429,
+            "rmse": 9.404,
+            "r2": 0.8659,
+            "bias_mbe": 6.124
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 19.257,
+            "mse": 603.911,
+            "rmse": 24.575,
+            "r2": 0.8163,
+            "bias_mbe": 16.391
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 6.304,
+            "mse": 61.243,
+            "rmse": 7.826,
+            "r2": 0.784,
+            "bias_mbe": 5.568
+          },
+          "co": {
+            "n": 3456,
+            "mae": 235.687,
+            "mse": 103033.214,
+            "rmse": 320.988,
+            "r2": 0.6885,
+            "bias_mbe": 174.384
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 39.255,
+          "mse": 2359.514,
+          "rmse": 48.575,
+          "r2": 0.8464,
+          "bias_mbe": 37.977
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 43.999,
+        "mse": 2538.244,
+        "rmse": 50.381,
+        "r2": 0.7127,
+        "bias_mbe": 43.909
+      }
+    },
+    {
+      "station": "R K Puram",
+      "uid": "delhi-rk-puram",
+      "zone": "South Delhi",
+      "lat": 28.5632,
+      "lon": 77.1869,
+      "ratios": {
+        "pm2_5": 0.6296,
+        "pm10": 0.95,
+        "no2": 0.95,
+        "o3": 0.95,
+        "so2": 0.95,
+        "co": 0.95
+      },
+      "ratio_basis": {
+        "pm2_5": "iqair_live_single_hour",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 0.95,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 32.235,
+            "mse": 1439.668,
+            "rmse": 37.943,
+            "r2": 0.3855,
+            "bias_mbe": -32.22
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 16.582,
+            "mse": 737.826,
+            "rmse": 27.163,
+            "r2": 0.9849,
+            "bias_mbe": -13.482
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 4.19,
+            "mse": 38.109,
+            "rmse": 6.173,
+            "r2": 0.9422,
+            "bias_mbe": -2.105
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 11.787,
+            "mse": 266.871,
+            "rmse": 16.336,
+            "r2": 0.9188,
+            "bias_mbe": -6.108
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 3.933,
+            "mse": 31.432,
+            "rmse": 5.606,
+            "r2": 0.8892,
+            "bias_mbe": -1.743
+          },
+          "co": {
+            "n": 3456,
+            "mae": 157.123,
+            "mse": 64507.967,
+            "rmse": 253.984,
+            "r2": 0.805,
+            "bias_mbe": -39.346
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 40.648,
+          "mse": 3285.72,
+          "rmse": 57.321,
+          "r2": 0.7861,
+          "bias_mbe": -37.676
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 65.552,
+        "mse": 6275.267,
+        "rmse": 79.217,
+        "r2": 0.2898,
+        "bias_mbe": -63.222
+      }
+    },
+    {
+      "station": "Jahangirpuri",
+      "uid": "delhi-jahangirpuri",
+      "zone": "North Delhi",
+      "lat": 28.7328,
+      "lon": 77.1706,
+      "ratios": {
+        "pm2_5": 1.21,
+        "pm10": 1.21,
+        "no2": 1.21,
+        "o3": 1.21,
+        "so2": 1.21,
+        "co": 1.21
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.21,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 18.048,
+            "mse": 481.947,
+            "rmse": 21.953,
+            "r2": 0.7943,
+            "bias_mbe": 17.614
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 46.485,
+            "mse": 4524.339,
+            "rmse": 67.263,
+            "r2": 0.9075,
+            "bias_mbe": 45.629
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 7.141,
+            "mse": 94.834,
+            "rmse": 9.738,
+            "r2": 0.8561,
+            "bias_mbe": 6.453
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 19.976,
+            "mse": 646.338,
+            "rmse": 25.423,
+            "r2": 0.8033,
+            "bias_mbe": 17.291
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 6.538,
+            "mse": 65.256,
+            "rmse": 8.078,
+            "r2": 0.7699,
+            "bias_mbe": 5.861
+          },
+          "co": {
+            "n": 3456,
+            "mae": 241.476,
+            "mse": 107169.0,
+            "rmse": 327.367,
+            "r2": 0.676,
+            "bias_mbe": 182.934
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 40.918,
+          "mse": 2533.905,
+          "rmse": 50.338,
+          "r2": 0.8351,
+          "bias_mbe": 39.781
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 45.883,
+        "mse": 2733.734,
+        "rmse": 52.285,
+        "r2": 0.6906,
+        "bias_mbe": 45.829
+      }
+    },
+    {
+      "station": "Ghaziabad (Loni)",
+      "uid": "ghaziabad-loni",
+      "zone": "Ghaziabad",
+      "lat": 28.7533,
+      "lon": 77.2882,
+      "ratios": {
+        "pm2_5": 1.24,
+        "pm10": 1.24,
+        "no2": 1.24,
+        "o3": 1.24,
+        "so2": 1.24,
+        "co": 1.24
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.24,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 20.471,
+            "mse": 608.121,
+            "rmse": 24.66,
+            "r2": 0.7405,
+            "bias_mbe": 20.19
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 53.123,
+            "mse": 5829.199,
+            "rmse": 76.349,
+            "r2": 0.8809,
+            "bias_mbe": 52.45
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 7.969,
+            "mse": 116.079,
+            "rmse": 10.774,
+            "r2": 0.8239,
+            "bias_mbe": 7.44
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 22.211,
+            "mse": 786.982,
+            "rmse": 28.053,
+            "r2": 0.7606,
+            "bias_mbe": 19.991
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 7.263,
+            "mse": 78.6,
+            "rmse": 8.866,
+            "r2": 0.7228,
+            "bias_mbe": 6.738
+          },
+          "co": {
+            "n": 3456,
+            "mae": 259.752,
+            "mse": 120773.948,
+            "rmse": 347.525,
+            "r2": 0.6348,
+            "bias_mbe": 208.581
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 45.916,
+          "mse": 3094.011,
+          "rmse": 55.624,
+          "r2": 0.7986,
+          "bias_mbe": 45.097
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 51.539,
+        "mse": 3357.022,
+        "rmse": 57.94,
+        "r2": 0.6201,
+        "bias_mbe": 51.527
+      }
+    },
+    {
+      "station": "Bawana",
+      "uid": "delhi-bawana",
+      "zone": "North Delhi",
+      "lat": 28.7762,
+      "lon": 77.0511,
+      "ratios": {
+        "pm2_5": 1.25,
+        "pm10": 1.25,
+        "no2": 1.25,
+        "o3": 1.25,
+        "so2": 1.25,
+        "co": 1.25
+      },
+      "ratio_basis": {
+        "pm2_5": "catalog_prior",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.25,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 21.293,
+            "mse": 654.016,
+            "rmse": 25.574,
+            "r2": 0.7209,
+            "bias_mbe": 21.048
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 55.344,
+            "mse": 6304.059,
+            "rmse": 79.398,
+            "r2": 0.8712,
+            "bias_mbe": 54.723
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 8.253,
+            "mse": 123.836,
+            "rmse": 11.128,
+            "r2": 0.8121,
+            "bias_mbe": 7.77
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 22.981,
+            "mse": 838.316,
+            "rmse": 28.954,
+            "r2": 0.7449,
+            "bias_mbe": 20.891
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 7.514,
+            "mse": 83.482,
+            "rmse": 9.137,
+            "r2": 0.7056,
+            "bias_mbe": 7.03
+          },
+          "co": {
+            "n": 3456,
+            "mae": 266.14,
+            "mse": 125708.126,
+            "rmse": 354.553,
+            "r2": 0.6199,
+            "bias_mbe": 217.131
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 47.546,
+          "mse": 3289.221,
+          "rmse": 57.352,
+          "r2": 0.7859,
+          "bias_mbe": 46.807
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 53.369,
+        "mse": 3572.832,
+        "rmse": 59.773,
+        "r2": 0.5957,
+        "bias_mbe": 53.364
+      }
+    },
+    {
+      "station": "Mundka",
+      "uid": "delhi-mundka",
+      "zone": "West Delhi",
+      "lat": 28.6832,
+      "lon": 77.0298,
+      "ratios": {
+        "pm2_5": 0.5884,
+        "pm10": 1.22,
+        "no2": 1.22,
+        "o3": 1.22,
+        "so2": 1.22,
+        "co": 1.22
+      },
+      "ratio_basis": {
+        "pm2_5": "iqair_live_single_hour",
+        "pm10": "catalog_prior",
+        "no2": "catalog_prior",
+        "o3": "catalog_prior",
+        "so2": "catalog_prior",
+        "co": "catalog_prior"
+      },
+      "aqi_factor": 1.22,
+      "metrics": {
+        "species": {
+          "pm2_5": {
+            "n": 3456,
+            "mae": 35.763,
+            "mse": 1753.342,
+            "rmse": 41.873,
+            "r2": 0.2517,
+            "bias_mbe": -35.758
+          },
+          "pm10": {
+            "n": 3456,
+            "mae": 48.693,
+            "mse": 4939.339,
+            "rmse": 70.28,
+            "r2": 0.899,
+            "bias_mbe": 47.903
+          },
+          "no2": {
+            "n": 3456,
+            "mae": 7.413,
+            "mse": 101.578,
+            "rmse": 10.079,
+            "r2": 0.8459,
+            "bias_mbe": 6.782
+          },
+          "o3": {
+            "n": 3456,
+            "mae": 20.708,
+            "mse": 690.993,
+            "rmse": 26.287,
+            "r2": 0.7898,
+            "bias_mbe": 18.191
+          },
+          "so2": {
+            "n": 3456,
+            "mae": 6.775,
+            "mse": 69.487,
+            "rmse": 8.336,
+            "r2": 0.755,
+            "bias_mbe": 6.153
+          },
+          "co": {
+            "n": 3456,
+            "mae": 247.408,
+            "mse": 111504.384,
+            "rmse": 333.923,
+            "r2": 0.6629,
+            "bias_mbe": 191.483
+          }
+        },
+        "aqi": {
+          "n": 3456,
+          "mae": 49.319,
+          "mse": 4051.283,
+          "rmse": 63.65,
+          "r2": 0.7363,
+          "bias_mbe": 3.031
+        }
+      },
+      "winter_aqi": {
+        "n": 1152,
+        "mae": 70.977,
+        "mse": 6889.928,
+        "rmse": 83.006,
+        "r2": 0.2203,
+        "bias_mbe": -37.272
+      }
+    }
+  ]
+}

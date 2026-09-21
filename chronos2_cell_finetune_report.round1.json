@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-09-18T00:46:53.267707",
+  "species": "pm10",
+  "config": {
+    "num_steps": 600,
+    "lr": 3e-05,
+    "context_hours": 720,
+    "seed": 42,
+    "batch_size": 32,
+    "months": 48
+  },
+  "cells": {
+    "c70_192": {
+      "cell": "c70_192",
+      "center": [
+        28.4,
+        77.2
+      ],
+      "n_train_origins": 595,
+      "n_eval_origins": 48,
+      "truth_mean": 275.09,
+      "inherited_city_model": {
+        "n": 3456,
+        "mae": 35.102,
+        "mse": 10666.286,
+        "rmse": 103.278,
+        "r2": 0.9622,
+        "nrmse": 0.2509,
+        "mean": 411.686,
+        "bias_mbe": -3.681
+      },
+      "specialist": {
+        "n": 3456,
+        "mae": 34.398,
+        "mse": 10654.716,
+        "rmse": 103.222,
+        "r2": 0.9622,
+        "nrmse": 0.2507,
+        "mean": 411.686,
+        "bias_mbe": -3.607
+      },
+      "gate": {
+        "evaluated": false,
+        "pass": false
+      },
+      "adopted": true
+    },
+    "c70_191": {
+      "cell": "c70_191",
+      "center": [
+        28.4,
+        76.8
+      ],
+      "n_train_origins": 595,
+      "n_eval_origins": 48,
+      "truth_mean": 214.53,
+      "inherited_city_model": {
+        "n": 3456,
+        "mae": 20.535,
+        "mse": 1419.562,
+        "rmse": 37.677,
+        "r2": 0.9891,
+        "nrmse": 0.1204,
+        "mean": 312.957,
+        "bias_mbe": -0.797
+      },
+      "specialist": {
+        "n": 3456,
+        "mae": 20.432,
+        "mse": 1393.173,
+        "rmse": 37.325,
+        "r2": 0.9893,
+        "nrmse": 0.1193,
+        "mean": 312.957,
+        "bias_mbe": 0.448
+      },
+      "gate": {
+        "evaluated": false,
+        "pass": false
+      },
+      "adopted": true
+    },
+    "c70_193": {
+      "cell": "c70_193",
+      "center": [
+        28.4,
+        77.6
+      ],
+      "n_train_origins": 595,
+      "n_eval_origins": 48,
+      "truth_mean": 227.92,
+      "inherited_city_model": {
+        "n": 3456,
+        "mae": 24.157,
+        "mse": 2463.406,
+        "rmse": 49.633,
+        "r2": 0.9851,
+        "nrmse": 0.1499,
+        "mean": 331.138,
+        "bias_mbe": -3.228
+      },
+      "specialist": {
+        "n": 3456,
+        "mae": 23.792,
+        "mse": 2478.504,
+        "rmse": 49.785,
+        "r2": 0.985,
+        "nrmse": 0.1503,
+        "mean": 331.138,
+        "bias_mbe": -2.614
+      },
+      "gate": {
+        "evaluated": false,
+        "pass": false
+      },
+      "adopted": false
+    }
+  }
+}
