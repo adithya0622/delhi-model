@@ -110,7 +110,7 @@ async def forecast_72hr_chronos(
             covariates = _split_covariates(met_hourly, origin)
             covariates.update(_cams_covariate_split(cams_hourly, origin))
             hours, chronos_status = predict_72hr_chronos2_finetuned(
-                history_series, covariates, {"hourly": {"time": forecast_times}}
+                history_series, covariates, {"hourly": {"time": forecast_times}}, lat=lat, lon=lon
             )
         elif serving_model() == "chronos2":
             # Zero-shot Chronos-2: native multivariate; meteorology rides

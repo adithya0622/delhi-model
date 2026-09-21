@@ -86,6 +86,52 @@ _FT_CAL = ("cal_hod_sin", "cal_hod_cos", "cal_doy_sin", "cal_doy_cos")
 _FT_CONTEXT_HOURS = 720
 FT_CONTEXT_HOURS = _FT_CONTEXT_HOURS  # public alias for endpoint imports
 
+# ── Per-cell adopted specialists (scripts/finetune_chronos2_cells.py) ──
+# PM10 cells trained on their OWN CAMS series and adopted ONLY after beating
+# the city specialist on the identical 48-origin holdout
+# (chronos2_cell_finetune_report.json). PM10 is the only species with adopted
+# per-cell winners; every other species serves the city specialist everywhere.
+# Routing matches the evaluation EXACTLY (scripts/cell_archives.py::cell_key):
+# the 0.4-degree CAMS cell CONTAINING the request point gets its adopted
+# specialist if one exists — there is no cross-cell borrowing, and points in
+# cells without adopted specialists (incl. the training cell) get the city
+# model, the same model that was evaluated there. A species is routed only if
+# its checkpoint exists on disk (verified at request time), so pruning an
+# artifact degrades gracefully to the city specialist.
+_CELLS_DIR = Path(__file__).resolve().parents[1] / "artifacts" / "chronos2_cells"
+_CELL_GRID_OFFSET = 0.2
+_CELL_GRID_STEP = 0.4
+_CELL_SPECIALISTS: dict[tuple[int, int], dict[str, str]] = {
+    (70, 191): {"pm10": "c70_191_pm10"},   # Najafgarh / SW
+    (70, 192): {"pm10": "c70_192_pm10"},   # south-central
+    (70, 193): {"pm10": "c70_193_pm10"},   # Greater Noida / SE
+}
+
+
+def _cell_key(lat: float, lon: float) -> tuple[int, int]:
+    """(lat_band, lon_band) of the 0.4-degree CAMS cell containing the point
+    — identical to scripts/cell_archives.py::cell_key."""
+    return (
+        math.floor((float(lat) - _CELL_GRID_OFFSET) / _CELL_GRID_STEP),
+        math.floor((float(lon) - _CELL_GRID_OFFSET) / _CELL_GRID_STEP),
+    )
+
+
+def cell_specialists_for(lat: float, lon: float) -> dict[str, str]:
+    """species -> checkpoint subdir (under chronos2_cells/) for this location.
+
+    Exact-cell routing: only the cell containing (lat, lon) is considered, and
+    only species whose per-cell checkpoint is actually present on disk are
+    returned; anything missing falls back to the city specialist silently.
+    """
+    available = _CELL_SPECIALISTS.get(_cell_key(lat, lon), {})
+    out: dict[str, str] = {}
+    for species, subdir in available.items():
+        ckpt = _CELLS_DIR / subdir / f"species_{species}"
+        if (ckpt / "adapter_config.json").is_file() or (ckpt / "config.json").is_file():
+            out[species] = subdir
+    return out
+
 
 def chronos2_covariate_order(species: str) -> list[str]:
     """Exact covariate channel order each per-species specialist was trained on."""
@@ -143,12 +189,17 @@ def finetuned_serving_ready() -> bool:
     return True
 
 
-@lru_cache(maxsize=8)
-def _load_ft_pipeline(species: str) -> tuple[Any | None, str]:
-    """Cached per-species fine-tuned pipeline (LoRA adapter auto-merged on load)."""
-    ckpt = _FT_DIR / f"species_{species}"
+@lru_cache(maxsize=16)
+def _load_ft_pipeline(species: str, cell_subdir: str = "") -> tuple[Any | None, str]:
+    """Cached per-species fine-tuned pipeline (LoRA adapter auto-merged on load).
+
+    ``cell_subdir`` empty -> the city specialist under chronos2_delhi/;
+    otherwise a directory name under chronos2_cells/ (per-cell adopted model).
+    """
+    base_dir = _CELLS_DIR / cell_subdir if cell_subdir else _FT_DIR
+    ckpt = base_dir / f"species_{species}"
     if not (ckpt / "adapter_config.json").is_file() and not (ckpt / "config.json").is_file():
-        return None, f"no fine-tuned checkpoint for {species}"
+        return None, f"no fine-tuned checkpoint for {species} at {ckpt}"
     try:
         from chronos.chronos2 import Chronos2Pipeline
         return Chronos2Pipeline.from_pretrained(str(ckpt)), ""
@@ -449,6 +500,8 @@ def predict_72hr_chronos2_finetuned(
     history_series: dict[str, list[float | None]],
     covariate_series: dict[str, tuple[list[float | None], list[float | None]]] | None,
     met_forecast: dict[str, Any],
+    lat: float | None = None,
+    lon: float | None = None,
 ) -> tuple[list[dict[str, Any]] | None, dict[str, Any]]:
     """Delhi fine-tuned Chronos-2 specialists: one LoRA model per pollutant.
 
@@ -460,8 +513,22 @@ def predict_72hr_chronos2_finetuned(
     an input, matching the leak-free training contract. Serves only when
     ``finetuned_serving_ready()`` is true (gates passed); otherwise returns
     (None, reason) so the endpoint can degrade honestly.
+
+    Cell-aware routing: when ``lat``/``lon`` are given, species with an
+    adopted per-cell specialist whose checkpoint exists on disk serve from
+    ``chronos2_cells/`` instead of the city checkpoint. The per-cell models
+    were trained with the same 720-h context and identical covariate order,
+    so only the checkpoint changes. Every routed prediction is reported in
+    the response metadata (``cell_routing``) so callers can see which model
+    produced which pollutant.
     """
     import numpy as np
+
+    routed: dict[str, str] = {}
+    req_cell: tuple[int, int] | None = None
+    if lat is not None and lon is not None:
+        req_cell = _cell_key(lat, lon)
+        routed = cell_specialists_for(lat, lon)
 
     base: dict[str, Any] = {
         **chronos_model_status(),
@@ -469,6 +536,11 @@ def predict_72hr_chronos2_finetuned(
         "model": "chronos2",
         "serving_variant": "chronos2_delhi_finetuned",
         "delhi_finetune": finetuned_gates(),
+        "cell_routing": {
+            "requested": req_cell is not None,
+            "cell_key": list(req_cell) if req_cell else None,
+            "routed_species": sorted(routed),
+        },
     }
     if not finetuned_serving_ready():
         return None, {**base, "reason": "fine-tuned specialists not ready or acceptance gates not PASS"}
@@ -548,7 +620,8 @@ def predict_72hr_chronos2_finetuned(
     q_by_species: dict[str, dict[str, np.ndarray]] = {}
     failures: list[str] = []
     for mkey, _display in _SPECIES:
-        pipeline, load_reason = _load_ft_pipeline(mkey)
+        cell_subdir = routed.get(mkey, "")
+        pipeline, load_reason = _load_ft_pipeline(mkey, cell_subdir)
         if pipeline is None:
             failures.append(f"{mkey}: {load_reason}")
             continue
@@ -620,6 +693,8 @@ def predict_72hr_chronos2_finetuned(
         "context_hours_report": context_report,
         "covariates_passed": sorted((covariate_series or {}).keys()),
         "co_ugm3_factor": co_factor,
+        "serving_variant": "chronos2_delhi_finetuned_cell_routed" if routed else "chronos2_delhi_finetuned",
+        "routed_checkpoint": {m: routed[m] for m in sorted(routed)},
     }
 
 

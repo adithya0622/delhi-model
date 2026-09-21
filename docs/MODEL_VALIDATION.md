@@ -331,6 +331,21 @@ verdict. Result: **all six species pass at 50/50 stations**
 < 20 goal remains reported separately per species (met at 50/50 for PM2.5/NO2/SO2/O3,
 10/50 for PM10, 0/50 for CO — unreachable as documented above).
 
+## Serving parity: live API now routes adopted per-cell specialists (2026-09-21)
+
+The adopted per-cell PM10 specialists were previously used only by the offline gate
+evaluation; the live API served the city specialist everywhere. `predict_72hr_chronos2_finetuned`
+now accepts `lat`/`lon` and routes via EXACT cell membership (same 0.4-degree grid math as
+`scripts/cell_archives.py::cell_key`) — the cell containing the request point gets its
+adopted specialist if one exists on disk; there is NO cross-cell borrowing (nearest-center
+routing would have mis-served the training cell, whose nearest adopted center lies in a
+neighboring cell). Non-PM10 species and all other cells serve the city specialist, the same
+model the evaluation scored there. Verified: the routing map over the 50 stations reproduces
+the gate report's model assignment exactly (27 city / 21 c70_192 / 1 c70_191 / 1 c70_193);
+response metadata carries `cell_routing` + `routed_checkpoint` so every served prediction is
+auditable. Tests: `backend/tests/test_cell_routing.py` (8) + loader-seam update in
+test_chronos_service.py — full suite 336 passed.
+
 ## Known limitations (stated, not hidden)
 
 - CAMS reanalysis is the reference truth, not CPCB ground stations; absolute biases in

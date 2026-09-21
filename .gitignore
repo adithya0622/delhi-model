@@ -54,6 +54,7 @@ data_cache/
 
 # Logs
 *.log
+*.err
 
 # Local-only: secrets + scratch
 API_KEYS.md

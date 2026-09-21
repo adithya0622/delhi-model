@@ -176,7 +176,7 @@ async def _zone_forecast_variant(
             covariates = _split_covariates(met_hourly, origin)
             covariates.update(_cams_covariate_split(cams_hourly, origin))
             hours, status = predict_72hr_chronos2_finetuned(
-                history, covariates, {"hourly": {"time": forecast_times}}
+                history, covariates, {"hourly": {"time": forecast_times}}, lat=lat, lon=lon
             )
         elif variant == "chronos2":
             met_hourly = await fetch_met_context(lat, lon)

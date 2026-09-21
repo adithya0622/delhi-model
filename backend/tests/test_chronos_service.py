@@ -373,7 +373,9 @@ def _patch_ft_ready(monkeypatch, value: float = 45.0):
     monkeypatch.setattr(cfs, "_finetune_metrics", lambda: metrics)
     monkeypatch.setattr(cfs, "finetuned_serving_ready", lambda: True)  # checkpoints exist on disk
 
-    def _loader(species):
+    def _loader(species, cell_subdir: str = ""):
+        # cell_subdir: per-cell adopted checkpoints (chronos2_cells/) — the
+        # fake pipelines are city/cell-agnostic, so the subdir is ignored.
         return _FakeFTPipeline(species, value), ""
 
     monkeypatch.setattr(cfs, "_load_ft_pipeline", _loader)

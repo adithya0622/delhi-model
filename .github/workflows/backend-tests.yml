@@ -1,0 +1,32 @@
+name: backend-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run backend test suite
+        working-directory: backend
+        run: python -m pytest tests/ -q
+
+      - name: Gate metrics sanity (board must stay 50/50 all-six)
+        run: python -c "import json; s=json.load(open('chronos2_station_gate_metrics.json'))['summary']; assert s['stations_all_six_species_pass']==50, s; print('gate board OK:', s['per_species_station_pass'])"
